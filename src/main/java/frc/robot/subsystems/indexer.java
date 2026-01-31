@@ -5,13 +5,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.CANcoder;
 
 
-public class intake extends SubsystemBase {
-  
-  public intake() {}
+public class indexer extends SubsystemBase {
+  /** Creates a new indexer. */
+  public indexer() {}
 
   @Override
   public void periodic() {
