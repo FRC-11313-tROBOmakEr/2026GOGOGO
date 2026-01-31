@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+import frc.robot.subsystems.intake;
+
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -46,6 +48,9 @@ public class RobotContainer {
     private final AutoRoutines autoRoutines;
     private final AutoChooser autoChooser = new AutoChooser();
 
+    //這是intake
+    private final intake intake = new intake();
+
     public RobotContainer() {
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
@@ -55,6 +60,7 @@ public class RobotContainer {
 
         configureBindings();
     }
+
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -79,6 +85,9 @@ public class RobotContainer {
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
+        joystick.y().whileTrue(intake);
+        joystick.x().whileTrue(intake.intakeBack());
+
 
         //pov是xboxcontroller十字按鈕(有上下左右)
         joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
@@ -100,10 +109,14 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+
     }
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
         return autoChooser.selectedCommand();
     }
+
+
 }
