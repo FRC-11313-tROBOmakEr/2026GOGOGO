@@ -82,8 +82,8 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
        //我家的 
-        joystick.a().whileTrue(shooter.shoot());
-        joystick.b().whileTrue(shooter.back());
+        joystick.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+       
 
         //pov是xboxcontroller十字按鈕(有上下左右)
         joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
