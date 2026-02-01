@@ -11,6 +11,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,10 +21,18 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake;
+//import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.shooter;
+import frc.robot.subsystems.Shooter;
 
 import frc.robot.subsystems.Intake;
 
@@ -44,23 +54,60 @@ public class RobotContainer {
     private final CommandXboxController xboxController = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final shooter shooter = new shooter();
+    //private final Climber climber = new Climber();
 
     /* Path follower */
     private final AutoFactory autoFactory;
     private final AutoRoutines autoRoutines;
     private final AutoChooser autoChooser = new AutoChooser();
-
-    //這是intake
+    private final Shooter shooter = new Shooter();
+    //private final Climber climber = new Climber();
     private final Intake intake = new Intake();
+    //這是intake
+
+     public class AutoRoutines {
+        public final AutoFactory m_factory;
+        public AutoRoutines(AutoFactory factory) {
+            m_factory = factory;
+        }
+        
+        public AutoRoutine shoot2cycleAuto(Command shooCommand, Command intaCommand) {
+        final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
+        final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
+
+        routine.active().onTrue(
+            shoot2cycleAuto.resetOdometry()
+                .andThen(shooCommand)
+                .andThen(intaCommand)
+        );
+        return routine;
+    }
+    public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.autoRoutine("Shootclimbleft");
+            final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
+
+            routine.active().onTrue(
+                    shootclimbleft.resetOdometry()
+                            .andThen(shootclimbleft.cmd()));
+            return routine;
+        }
+
+}
 
     public RobotContainer() {
+        NamedCommands.registerCommand("shoot", shooter.shoot());
+        NamedCommands.registerCommand("intake", Intake.intake());
+        NamedCommands.registerCommand("climbleft", Climber.climbCommand());
+        NamedCommands.registerCommand("climbmid", climber.climbCommand());
+        NamedCommands.registerCommand("climbright", climber.climbCommand());
+
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
 
-        autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
+        autoChooser.addRoutine("Shootclimbleft",
+                () -> autoRoutines.shootclimbleft(Command.shoot(), Command.climbLeft()));
         SmartDashboard.putData("Auto Chooser", autoChooser);
-
+        
         configureBindings();
     }
 
@@ -89,10 +136,10 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
         ));
        //我家的 
-        joystick.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+        xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
        
 
-        joystick.y().whileTrue(
+        xboxController.y().whileTrue(
             Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
         ).onFalse(
             Commands.run(intake::backAndStopIntake, intake)
