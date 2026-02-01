@@ -1244,9 +1244,10 @@ public class LimelightHelpers {
      * Make sure you are calling setRobotOrientation() before calling this method.
      * 
      * @param limelightName
+     * @param rotation2d 
      * @return
      */
-    public static PoseEstimate getBotPoseEstimate_wpiBlue_MegaTag2(String limelightName) {
+    public static PoseEstimate getBotPoseEstimate_wpiBlue_MegaTag2(String limelightName, Rotation2d rotation2d) {
         return getBotPoseEstimate(limelightName, "botpose_orb_wpiblue", true);
     }
 
