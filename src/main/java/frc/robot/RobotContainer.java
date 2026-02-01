@@ -139,15 +139,9 @@ public class RobotContainer {
         xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
        
 
-        xboxController.y().whileTrue(
-            Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
-        ).onFalse(
-            Commands.run(intake::backAndStopIntake, intake)
-                .until(intake::isRetracted)
-                .finallyDo(intake::stopAll)
-                // 指令：開始收回，直到 isRetracted() 回傳 true，最後停止
-        );
-        
+        xboxController.y()
+        .whileTrue(intake.intakeAndExtension())
+        .onFalse(intake.stopIntakeAndBack());
 
         //pov是xboxcontroller十字按鈕(有上下左右)
         xboxController.povUp().whileTrue(drivetrain.applyRequest(() ->
