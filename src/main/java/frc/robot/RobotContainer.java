@@ -126,7 +126,7 @@ public class RobotContainer {
             m_factory = factory;
         }
         
-        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake extensionAndIntake) {
+        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake autoIntake) {
         final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
         final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
 
@@ -134,7 +134,7 @@ public class RobotContainer {
             shoot2cycleAuto.resetOdometry()
                 .andThen(shoot.shoot())
                 .andThen(shoot.back())
-                .andThen(extensionAndIntake.extensionAndIntake())
+                .andThen(autoIntake.Autointake())
         );
         return routine;
     }
