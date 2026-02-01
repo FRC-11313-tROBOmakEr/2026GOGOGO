@@ -10,8 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.intake;
-import edu.wpi.first.wpilibj.XboxController;
+//import edu.wpi.first.wpilibj.XboxController;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -24,7 +23,7 @@ public class Robot extends TimedRobot {
         .withJoystickReplay();
 
     private final boolean kUseLimelight = false;
-    private final XboxController xboxController = new XboxController(0);
+   // private final XboxController xboxController = new XboxController(0);
 
     public Robot() {
         m_robotContainer = new RobotContainer();
