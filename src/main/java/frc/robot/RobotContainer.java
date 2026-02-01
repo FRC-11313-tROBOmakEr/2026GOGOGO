@@ -64,54 +64,6 @@ public class RobotContainer {
     //private final Climber climber = new Climber();
     private final Intake intake = new Intake();
     //這是intake
-
-     public class AutoRoutines {
-        public final AutoFactory m_factory;
-        public AutoRoutines(AutoFactory factory) {
-            m_factory = factory;
-        }
-        
-        public AutoRoutine shoot2cycleAuto(Command shooCommand, Command intaCommand) {
-        final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
-        final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
-
-        routine.active().onTrue(
-            shoot2cycleAuto.resetOdometry()
-                .andThen(shooCommand)
-                .andThen(intaCommand)
-        );
-        return routine;
-    }
-    public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
-            final AutoRoutine routine = m_factory.autoRoutine("Shootclimbleft");
-            final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
-
-            routine.active().onTrue(
-                    shootclimbleft.resetOdometry()
-                            .andThen(shootclimbleft.cmd()));
-            return routine;
-        }
-
-}
-
-    public RobotContainer() {
-        NamedCommands.registerCommand("shoot", shooter.shoot());
-        NamedCommands.registerCommand("intake", Intake.intake());
-        NamedCommands.registerCommand("climbleft", Climber.climbCommand());
-        NamedCommands.registerCommand("climbmid", climber.climbCommand());
-        NamedCommands.registerCommand("climbright", climber.climbCommand());
-
-        autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory);
-
-        autoChooser.addRoutine("Shootclimbleft",
-                () -> autoRoutines.shootclimbleft(Command.shoot(), Command.climbLeft()));
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        
-        configureBindings();
-    }
-
-
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -172,6 +124,78 @@ public class RobotContainer {
 
 
     }
+
+     public class AutoRoutines {
+        public final AutoFactory m_factory;
+        public AutoRoutines(AutoFactory factory) {
+            m_factory = factory;
+        }
+        
+        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake extensionAndIntake) {
+        final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
+        final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
+
+        routine.active().onTrue(
+            shoot2cycleAuto.resetOdometry()
+                .andThen(shoot.shoot())
+                .andThen(shoot.back())
+                .andThen(extensionAndIntake::extensionAndIntake)
+        );
+        return routine;
+    }
+    
+    public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbleft");
+            final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
+
+            routine.active().onTrue(
+                    shootclimbleft.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+    public AutoRoutine shootclimbright(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbright");
+            final AutoTrajectory shootclimbright = routine.trajectory("Shootclimbright");
+
+            routine.active().onTrue(
+                    shootclimbright.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+    public AutoRoutine shootclimbmid(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbmid");
+            final AutoTrajectory shootclimbmid = routine.trajectory("Shootclimbmid");
+
+            routine.active().onTrue(
+                    shootclimbmid.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+
+}
+
+    public RobotContainer() {
+        NamedCommands.registerCommand("shoot", shooter.shoot());
+        NamedCommands.registerCommand("intake", );
+        //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
+        //NamedCommands.registerCommand("climbmid", climber.climbCommand());
+        //NamedCommands.registerCommand("climbright", climber.climbCommand());
+
+        autoFactory = drivetrain.createAutoFactory();
+        autoRoutines = new AutoRoutines(autoFactory);
+
+        autoChooser.addRoutine("Shootclimbleft",
+                () -> autoRoutines.shootclimbleft(Shooter.shoot(), Command.climbLeft()));
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        
+        configureBindings();
+    }
+
+
+    
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
