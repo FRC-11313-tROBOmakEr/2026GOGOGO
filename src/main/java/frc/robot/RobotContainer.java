@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.shooter;
 
 import frc.robot.subsystems.Intake;
 
@@ -43,6 +44,7 @@ public class RobotContainer {
     private final CommandXboxController xboxController = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final shooter shooter = new shooter();
 
     /* Path follower */
     private final AutoFactory autoFactory;
@@ -86,6 +88,9 @@ public class RobotContainer {
         xboxController.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
         ));
+       //我家的 
+        joystick.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+       
 
         joystick.y().whileTrue(
             Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
