@@ -15,12 +15,15 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -46,6 +49,9 @@ public class RobotContainer {
     private final AutoRoutines autoRoutines;
     private final AutoChooser autoChooser = new AutoChooser();
 
+    //這是intake
+    private final Intake intake = new Intake();
+
     public RobotContainer() {
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory);
@@ -55,6 +61,7 @@ public class RobotContainer {
 
         configureBindings();
     }
+
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -80,6 +87,16 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
         ));
 
+        joystick.y().whileTrue(
+            Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
+        ).onFalse(
+            Commands.run(intake::backAndStopIntake, intake)
+                .until(intake::isRetracted)
+                .finallyDo(intake::stopAll)
+                // 指令：開始收回，直到 isRetracted() 回傳 true，最後停止
+        );
+        
+
         //pov是xboxcontroller十字按鈕(有上下左右)
         xboxController.povUp().whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
@@ -100,10 +117,14 @@ public class RobotContainer {
         xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+
     }
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
         return autoChooser.selectedCommand();
     }
+
+
 }
