@@ -87,7 +87,7 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
         ));
 
-        joystick.y().whileTrue(
+        xboxController.y().whileTrue(
             Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
         ).onFalse(
             Commands.run(intake::backAndStopIntake, intake)
