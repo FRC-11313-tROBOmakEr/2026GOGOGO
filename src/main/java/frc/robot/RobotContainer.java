@@ -134,7 +134,7 @@ public class RobotContainer {
             shoot2cycleAuto.resetOdometry()
                 .andThen(shoot.shoot())
                 .andThen(shoot.back())
-                .andThen(extensionAndIntake::extensionAndIntake)
+                .andThen(extensionAndIntake.extensionAndIntake())
         );
         return routine;
     }

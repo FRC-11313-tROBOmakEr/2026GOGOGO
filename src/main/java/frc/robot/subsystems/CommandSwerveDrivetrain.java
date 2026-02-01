@@ -122,40 +122,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public CommandSwerveDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
-        SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-         configurePPAuto();
-    }
-    private void configurePPAuto() {
-        try {
-            AutoBuilder.configure(
-                () -> getState().Pose, 
-                (pose) -> resetPose(pose), 
-                () -> getState().Speeds, 
-                (speeds, feedForwards) -> setControl(
-                    speedsApplier.withSpeeds(speeds)
-                    .withWheelForceFeedforwardsX(feedForwards.robotRelativeForcesX())
-                    .withWheelForceFeedforwardsY(feedForwards.robotRelativeForcesY())
-                ), 
-                new PPHolonomicDriveController(
-                    new PIDConstants(5, 0, 0), 
-                    new PIDConstants(5, 0, 0)
-                ), 
-                RobotConfig.fromGUISettings(), 
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, 
-                this
-            );
-        } catch (Exception error) {
-            DriverStation.reportError("Error occured when configuring AutoBuilder: ", error.getStackTrace());
-        }
-    }
-
-    public CommandSwerveDrivetrain(
-        SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
