@@ -11,6 +11,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,9 +21,18 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake;
+//import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Shooter;
 
 import frc.robot.subsystems.Intake;
 
@@ -43,26 +54,16 @@ public class RobotContainer {
     private final CommandXboxController xboxController = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    //private final Climber climber = new Climber();
 
     /* Path follower */
     private final AutoFactory autoFactory;
     private final AutoRoutines autoRoutines;
     private final AutoChooser autoChooser = new AutoChooser();
-
-    //這是intake
+    private final Shooter shooter = new Shooter();
+    //private final Climber climber = new Climber();
     private final Intake intake = new Intake();
-
-    public RobotContainer() {
-        autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory);
-
-        autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        configureBindings();
-    }
-
-
+    //這是intake
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -86,15 +87,13 @@ public class RobotContainer {
         xboxController.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
         ));
+       //我加的 
+        xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+       
 
-        xboxController.y().whileTrue(
-            Commands.run(intake::extensionAndIntake, intake) //run(執行甚麼 , 誰執行)
-        ).onFalse(
-            Commands.run(intake::backAndStopIntake, intake)
-                .until(intake::isRetracted)
-                .finallyDo(intake::stopAll)
-                // 指令：開始收回，直到 isRetracted() 回傳 true，最後停止
-        );
+         xboxController.y()
+        .whileTrue(intake.intakeAndExtension())
+        .onFalse(intake.stopIntakeAndBack());
         
 
         //pov是xboxcontroller十字按鈕(有上下左右)
@@ -120,6 +119,78 @@ public class RobotContainer {
 
 
     }
+
+     public class AutoRoutines {
+        public final AutoFactory m_factory;
+        public AutoRoutines(AutoFactory factory) {
+            m_factory = factory;
+        }
+        
+        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake extensionAndIntake) {
+        final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
+        final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
+
+        routine.active().onTrue(
+            shoot2cycleAuto.resetOdometry()
+                .andThen(shoot.shoot())
+                .andThen(shoot.back())
+                .andThen(extensionAndIntake::extensionAndIntake)
+        );
+        return routine;
+    }
+    
+    public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbleft");
+            final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
+
+            routine.active().onTrue(
+                    shootclimbleft.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+    public AutoRoutine shootclimbright(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbright");
+            final AutoTrajectory shootclimbright = routine.trajectory("Shootclimbright");
+
+            routine.active().onTrue(
+                    shootclimbright.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+    public AutoRoutine shootclimbmid(Command shootCommand, Command climberCommand) {
+            final AutoRoutine routine = m_factory.newRoutine("Shootclimbmid");
+            final AutoTrajectory shootclimbmid = routine.trajectory("Shootclimbmid");
+
+            routine.active().onTrue(
+                    shootclimbmid.resetOdometry()
+                            .andThen(shootCommand)
+                            .andThen(climberCommand));
+            return routine;
+        }
+
+}
+
+    public RobotContainer() {
+        NamedCommands.registerCommand("shoot", shooter.shoot());
+        NamedCommands.registerCommand("intake", );
+        //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
+        //NamedCommands.registerCommand("climbmid", climber.climbCommand());
+        //NamedCommands.registerCommand("climbright", climber.climbCommand());
+
+        autoFactory = drivetrain.createAutoFactory();
+        autoRoutines = new AutoRoutines(autoFactory);
+
+        autoChooser.addRoutine("Shootclimbleft",
+                () -> autoRoutines.shootclimbleft(Shooter.shoot(), Command.climbLeft()));
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        
+        configureBindings();
+    }
+
+
+    
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
