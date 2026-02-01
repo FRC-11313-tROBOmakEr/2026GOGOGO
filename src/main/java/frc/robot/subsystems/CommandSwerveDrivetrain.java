@@ -11,6 +11,11 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 
 
 import choreo.Choreo.TrajectoryLogger;
@@ -203,7 +208,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+             configurePPAuto();
     }
+        private void configurePPAuto() {
+        try {
+            AutoBuilder.configure(
+                () -> getState().Pose, 
+                (pose) -> resetPose(pose), 
+                () -> getState().Speeds, 
+                (speeds, feedForwards) -> setControl(
+                    speedsApplier.withSpeeds(speeds)
+                    .withWheelForceFeedforwardsX(feedForwards.robotRelativeForcesX())
+                    .withWheelForceFeedforwardsY(feedForwards.robotRelativeForcesY())
+                ), 
+                new PPHolonomicDriveController(
+                    new PIDConstants(5, 0, 0), 
+                    new PIDConstants(5, 0, 0)
+                ), 
+                RobotConfig.fromGUISettings(), 
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, 
+                this
+            );
+        } catch (Exception error) {
+            DriverStation.reportError("Error occured when configuring AutoBuilder: ", error.getStackTrace());
+        }
+    }
+    
 
     /**
      * Creates a new auto factory for this drivetrain.
