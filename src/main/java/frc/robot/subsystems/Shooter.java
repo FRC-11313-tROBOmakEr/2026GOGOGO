@@ -1,6 +1,10 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
+import java.util.function.Supplier;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -9,6 +13,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -20,7 +28,9 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import frc.robot.LimelightHelpers;
 
-public class shooter extends SubsystemBase {
+
+
+public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(0);
   private final TalonFX SmallFlyWheel = new TalonFX(1);
   private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
@@ -31,7 +41,7 @@ public class shooter extends SubsystemBase {
 
   private final RelativeEncoder encoder = superneo.getEncoder();
 
-  public shooter() {
+  public Shooter() {
     // 初始化哈哈哈
     posctrl = superneo.getClosedLoopController();
     indexerMT.configure(config, com.revrobotics.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
