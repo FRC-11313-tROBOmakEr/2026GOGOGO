@@ -33,7 +33,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
@@ -61,7 +62,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final SwerveRequest.ApplyRobotSpeeds speedsApplier = new SwerveRequest.ApplyRobotSpeeds();
 
-    private boolean doRejctUpdate, badTagData;
+    private LimelightHelpers.PoseEstimate mt2;
+    private boolean doRejectUpdate, badTagData;
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -215,6 +217,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
+        LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.LLName, getPigeon2().getYaw().getValueAsDouble(), 0, 0, 0, 0, 0);
+
+        doRejectUpdate = false;
+        badTagData = false;
+
+        if (LimelightHelpers.getFiducialID(Constants.VisionConstants.LLName) != -1) {
+            mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(Constants.VisionConstants.LLName);
+        }
+        else {
+            badTagData = true;
+        }
+
+        //Pose Estimator
+        if (!badTagData) {
+            if (Math.abs(getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720){
+                doRejectUpdate = true;
+            }
+            if (mt2.tagCount == 0){
+                doRejectUpdate = true;
+            }
+            if (!doRejectUpdate){
+                addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+            }
+        }
+
+        // Hint: To get estimated Pose2d from built-in PoseEstimator, use getState().Pose (check L258)
+
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -224,6 +253,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+    }
+
+    public Pose2d getPose() {
+        return getState().Pose;
     }
 
     private void startSimThread() {
