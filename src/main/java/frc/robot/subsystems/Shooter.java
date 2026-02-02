@@ -28,6 +28,7 @@ import com.revrobotics.RelativeEncoder;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
@@ -121,9 +122,9 @@ public class Shooter extends SubsystemBase {
   public void angle(double angle) {
     posctrl.setSetpoint(angle, SparkMax.ControlType.kPosition);
     // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y offset, then calculate to get distance
-    // relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace("light");
+    // relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
     // distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
-    double targetOffsetAngle_Vertical = LimelightHelpers.getTY("light");
+    double targetOffsetAngle_Vertical = LimelightHelpers.getTY(VisionConstants.LLName);
     double limelightMountAngleDegrees = 25.0;
     double limelightLensHeightInches = 20.0;
     double goalHeightInches = 60.0;

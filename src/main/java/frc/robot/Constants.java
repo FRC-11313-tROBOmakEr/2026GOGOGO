@@ -157,4 +157,8 @@ public final class Constants {
         public static final double MAX_VELOCITY = 400;
 
     }
+
+    public static class VisionConstants {
+        public static final String LLName = "light";
+    }
 }
