@@ -46,19 +46,30 @@ public class Intake extends SubsystemBase {
 
   // 指令:吸球和伸出
   public Command intakeAndExtension() {
-    timer.reset();
-    timer.start();
-    return Commands.runOnce(() -> {
-      if (timer.hasElapsed(3)) {
-        Intake_Roller.set(0.5);
-        Intake_Ctrl.set(0);
-      } else {
+    // timer.reset();
+    // timer.start();
+    // return Commands.runOnce(() -> {
+    //   if (timer.hasElapsed(3)) {
+    //     Intake_Roller.set(0.5);
+    //     Intake_Ctrl.set(0);
+    //   } else {
+    //     Intake_Roller.set(0.5);
+    //     Intake_Ctrl.set(0.5);
+
+    //   }
+    // }, this);
+
+    return Commands.sequence(
+      Commands.run(() -> {
         Intake_Roller.set(0.5);
         Intake_Ctrl.set(0.5);
-
-      }
-    }, this);
-
+      }, this),
+      Commands.waitSeconds(3),
+      Commands.run(() -> {
+        Intake_Roller.set(0.5);
+        Intake_Ctrl.set(0);
+      }, this)
+    );
   }
 
   // 指令:停止吸球和收回
