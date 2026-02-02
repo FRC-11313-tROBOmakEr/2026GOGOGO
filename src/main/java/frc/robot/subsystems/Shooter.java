@@ -47,8 +47,7 @@ public class Shooter extends SubsystemBase {
   private final RelativeEncoder encoder = superneo.getEncoder();
 
   public Shooter() {
-    // 初始化  
-
+    // 初始化
     SmallFlyWheel.setPosition(0);
     // 回歸原始設定
     BigFlyWheel.setPosition(0);
@@ -57,9 +56,9 @@ public class Shooter extends SubsystemBase {
     posctrl = superneo.getClosedLoopController();
     indexerMT.configure(indexerconfig, com.revrobotics.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     superneo.configure(superneoconfig, com.revrobotics.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    
-    //BigFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
-    //SmallFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
+
+    // BigFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
+    // SmallFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
 
     var Shooter_Ctrl_Config = BigFlyWheel.getConfigurator();
     Slot0Configs Shooter_Out_PIDConfig = new Slot0Configs();
@@ -93,13 +92,13 @@ public class Shooter extends SubsystemBase {
     Shooters_Ctrl_Config.apply(Shooter_Stop_PIDConfig);
     // 設定來回的PID值(依齒輪比決定)
 
-    //velocityFF 被撇一橫是因為明年就要移除
+    // velocityFF 被撇一橫是因為明年就要移除
     superneoconfig.closedLoop.pid(
         ShooterConstants.Shooter_Out_P,
         ShooterConstants.Shooter_Out_I,
         ShooterConstants.Shooter_Out_D);
     superneoconfig.closedLoop.velocityFF(ShooterConstants.Shooter_Out_F);
-    
+
     superneoconfig.closedLoop.pid(
         ShooterConstants.Shooter_Back_P,
         ShooterConstants.Shooter_Back_I,
@@ -157,7 +156,6 @@ public class Shooter extends SubsystemBase {
       superneo.set(0.2);
       BigFlyWheel.set(filter.calculate(0.5));
       SmallFlyWheel.set(filter.calculate(0.5));
-
     } else {
       BigFlyWheel.set(filter.calculate(0.5));
       SmallFlyWheel.set(filter.calculate(0.5));
@@ -183,19 +181,17 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command shootAuto() {
-    
-     Commands.sequence(
-       
+    return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(() -> BigFlyWheel.set(filter.calculate(0.5))),
             Commands.runOnce(() -> SmallFlyWheel.set(filter.calculate(0.5)))),
-        Commands.waitSeconds(0.8),  
+        Commands.waitSeconds(0.8),
         Commands.runOnce(() -> indexerMT.set(0.5)),
         Commands.waitSeconds(3.0),
         Commands.runOnce(() -> {
-            BigFlyWheel.set(0);
-            SmallFlyWheel.set(0);
-            indexerMT.set(0);}));
-    return null;
+          BigFlyWheel.set(0);
+          SmallFlyWheel.set(0);
+          indexerMT.set(0);
+        }));
   }
 }
