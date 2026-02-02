@@ -5,15 +5,12 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.math.geometry.Pose3d;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -42,6 +39,8 @@ public class Shooter extends SubsystemBase {
   private final SparkClosedLoopController posctrl;
   private double angle1;
   public WaitCommand timmer;
+  private Pose3d relativePoseToTag;
+  private double distanceToTag;
   SlewRateLimiter filter = new SlewRateLimiter(0.5);
 
   private final RelativeEncoder encoder = superneo.getEncoder();
@@ -121,9 +120,10 @@ public class Shooter extends SubsystemBase {
   // 取角度
   public void angle(double angle) {
     posctrl.setSetpoint(angle, SparkMax.ControlType.kPosition);
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry ty = table.getEntry("ty");
-    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+    // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y offset, then calculate to get distance
+    // relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace("light");
+    // distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
+    double targetOffsetAngle_Vertical = LimelightHelpers.getTY("light");
     double limelightMountAngleDegrees = 25.0;
     double limelightLensHeightInches = 20.0;
     double goalHeightInches = 60.0;
