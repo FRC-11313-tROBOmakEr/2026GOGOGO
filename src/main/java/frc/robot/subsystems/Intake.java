@@ -25,13 +25,6 @@ public class Intake extends SubsystemBase {
   private final SlewRateLimiter extensionLimiter = new SlewRateLimiter(0.5);
 
   public Intake() {
-    Init();
-
-  }
-
-  // 初始化
-  public void Init() {
-
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     SparkMaxConfig extensionConfig = new SparkMaxConfig();
 
