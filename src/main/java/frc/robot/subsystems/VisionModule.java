@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 
 public class VisionModule {
-    private static final double kDriveEncoderRotationsToMeters = 0.0254 * Math.PI/6.75 ;
+    private static final double kDriveEncoderRotationsToMeters = 4 * 0.0254 * Math.PI/6.75 ;
     
     private final TalonFX m_driveMotor;
     private final CANcoder m_turningEncoder;
