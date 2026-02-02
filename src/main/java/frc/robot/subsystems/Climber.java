@@ -28,6 +28,11 @@ public class Climber extends SubsystemBase {
     tubeMotor2.getConfigurator().apply(new TalonFXConfiguration());
     tubeMotor2.setControl(follower.withLeaderID(1));
     //(可能要反轉)config2.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        
+    //climberMotor.setPosition(0);
+    //回歸原始設定         
+    //climberMotor.setPosition(0);
+    //回歸原始設定  
 
     var Climber_Ctrl_Config = climberMotor.getConfigurator();
     Slot0Configs Climber_Out_PIDConfig =new Slot0Configs();
@@ -45,8 +50,7 @@ public class Climber extends SubsystemBase {
         Climber_Ctrl_Config.apply(Climber_Back_PIDConfig);
         //設定來回的PID值(依齒輪比決定)
 
-        climberMotor.setPosition(0);
-        //回歸原始設定        
+    
     
     var Line_Ctrl_Config = climberMotor.getConfigurator();
     Slot0Configs Line_Out_PIDConfig =new Slot0Configs();
@@ -63,14 +67,7 @@ public class Climber extends SubsystemBase {
         Line_Back_PIDConfig.kV = ClimberConstants.Line_Back_F;
         Line_Ctrl_Config.apply(Line_Back_PIDConfig);
         //設定來回的PID值(依齒輪比決定)
-
-        climberMotor.setPosition(0);
-        //回歸原始設定        
-    
-    
-    
-    
-    }
+  }
 
   public Command Climber_Out() {
     return Commands.runOnce(
@@ -85,21 +82,34 @@ public class Climber extends SubsystemBase {
 
   public Command Line_Out() {
     timer.reset();
+    timer.start();
+
     return Commands.runOnce(
         () -> {
-          if (timer.hasElapsed(2)) // 暫定
-            tubeMotor1.set(0.5); // 暫定
-        }, this);
-    // 捲線/
+          if (timer.hasElapsed(2)){  // 暫定
+            tubeMotor1.set(0); // 暫定
+          }
+          else {
+            tubeMotor1.set(0.5);
+          }
+        },this);
+       // 捲線
   }
 
   public Command Line_back() {
     timer.reset();
+    timer.start();
+
     return Commands.runOnce(
         () -> {
-          if (timer.hasElapsed(2)) // 暫定
+          if (timer.hasElapsed(2)){  // 暫定
             tubeMotor1.set(-0.3); // 暫定
+          }
+          else {
+          tubeMotor2.set(-0.5);
+          }
         }, this);
-    // 放線//慢
+      // 放線
+      //慢
   }
 }
