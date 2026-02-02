@@ -12,15 +12,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-//import frc.robot.subsystems.VisionModule;
-//import com.ctre.phoenix6.swerve.SwerveModule;
+import frc.robot.subsystems.VisionModule;
+import com.ctre.phoenix6.swerve.SwerveModule;
 
 public class Vision extends SubsystemBase {
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-        new Translation2d(0.32, 0.385), // 左前
-        new Translation2d(0.32, -0.385),  // 右前
-        new Translation2d(-0.32, 0.385),  // 左後
-        new Translation2d(-0.32, -0.385)    // 右後
+        new Translation2d(0.32, 0.385), // FL
+        new Translation2d(0.32, -0.385),  // FR
+        new Translation2d(-0.32, 0.385),  // BL
+        new Translation2d(-0.32, -0.385)    // BR
     );
 
     private final SwerveDrivePoseEstimator m_poseEstimator;
@@ -58,7 +58,7 @@ public class Vision extends SubsystemBase {
     
             // 從 LimelightHelpers 取得 MT2 結果
             LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2("limelight", getGyroRotation());
+                    .getBotPoseEstimate_wpiBlue_MegaTag2("light");
     
             // 檢查是否有看到 Target 且數據可信
             if (mt2Estimate != null && mt2Estimate.tagCount > 0) {//至少看到一個標籤
