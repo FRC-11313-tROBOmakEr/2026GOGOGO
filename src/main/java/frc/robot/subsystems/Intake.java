@@ -46,26 +46,13 @@ public class Intake extends SubsystemBase {
 
   // 指令:吸球和伸出
   public Command intakeAndExtension() {
-    // timer.reset();
-    // timer.start();
-    // return Commands.runOnce(() -> {
-    //   if (timer.hasElapsed(3)) {
-    //     Intake_Roller.set(0.5);
-    //     Intake_Ctrl.set(0);
-    //   } else {
-    //     Intake_Roller.set(0.5);
-    //     Intake_Ctrl.set(0.5);
-
-    //   }
-    // }, this);
-
     return Commands.sequence(
-      Commands.run(() -> {
+      Commands.run(() -> {//伸出
         Intake_Roller.set(0.5);
         Intake_Ctrl.set(0.5);
       }, this),
-      Commands.waitSeconds(3),
-      Commands.run(() -> {
+      Commands.waitSeconds(3),//伸出需要時間
+      Commands.run(() -> {//Ctrl停止,吸球
         Intake_Roller.set(0.5);
         Intake_Ctrl.set(0);
       }, this)
@@ -74,17 +61,17 @@ public class Intake extends SubsystemBase {
 
   // 指令:停止吸球和收回
   public Command stopIntakeAndBack() {
-    timer.reset();
-    timer.start();
-    return Commands.runOnce(() -> {
-      if (timer.hasElapsed(3)) {
-        Intake_Roller.set(0);
-        Intake_Ctrl.set(0);
-      } else {
+    return Commands.sequence(
+      Commands.run(() -> {//收回
         Intake_Roller.set(0);
         Intake_Ctrl.set(-0.5);
-      }
-    }, this);
+      }, this),
+      Commands.waitSeconds(3),//收回需要時間
+      Commands.run(() -> {//全部停止
+        Intake_Roller.set(0);
+        Intake_Ctrl.set(0);
+      }, this)
+    );
 
   }
 
