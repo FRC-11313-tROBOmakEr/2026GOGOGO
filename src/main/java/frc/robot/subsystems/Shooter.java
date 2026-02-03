@@ -122,20 +122,10 @@ public class Shooter extends SubsystemBase {
   public void angle(double angle) {
     posctrl.setSetpoint(angle, SparkMax.ControlType.kPosition);
     // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y offset, then calculate to get distance
-    // relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
-    // distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
-    double targetOffsetAngle_Vertical = LimelightHelpers.getTY(VisionConstants.LLName);
-    double limelightMountAngleDegrees = 25.0;
-    double limelightLensHeightInches = 20.0;
-    double goalHeightInches = 60.0;
-
-    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-
-    // calculate distance
-    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches)
-        / Math.tan(angleToGoalRadians);
-    angle = distanceFromLimelightToGoalInches * 0.2;
+    relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
+    distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
+    // 學長賽高!!!
+    angle = distanceToTag * 0.0475 + 10.36;
     angle1 = -angle;
 
     // 現學物理公式?
@@ -151,8 +141,9 @@ public class Shooter extends SubsystemBase {
 
   // 判斷是否在角度
   public Command shoot() {
-    angle(angle1);
-
+    return Commands.run(()->{
+       angle(angle1);
+    
     if (encoder.getPosition() > posctrl.getSetpoint()) {
       superneo.set(0.2);
       BigFlyWheel.set(filter.calculate(0.5));
@@ -163,11 +154,16 @@ public class Shooter extends SubsystemBase {
       superneo.set(0);
       indexerMT.set(0.5);
     }
-    return null;
+
+    });
+    
+   
+    
   }
 
   public Command back() {
-    posctrl.setSetpoint(angle1, SparkMax.ControlType.kPosition);
+    return Commands.run(()->{
+       posctrl.setSetpoint(angle1, SparkMax.ControlType.kPosition);
 
     BigFlyWheel.set(0);
     SmallFlyWheel.set(0);
@@ -178,7 +174,8 @@ public class Shooter extends SubsystemBase {
       superneo.set(0);
       indexerMT.set(0);
     }
-    return null;
+    });
+    
   }
 
   public Command shootAuto() {
