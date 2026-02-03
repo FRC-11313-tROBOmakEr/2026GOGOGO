@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.VoltageOut;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -37,12 +38,16 @@ public class Shooter extends SubsystemBase {
   private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
+  private final VoltageOut m_request = new VoltageOut(0);
   private final SparkClosedLoopController posctrl;
   private double angle1;
   public WaitCommand timmer;
   private Pose3d relativePoseToTag;
   private double distanceToTag;
   SlewRateLimiter filter = new SlewRateLimiter(0.5);
+  public double targetSpeed = 0.8;
+  public double smoothSpeed;
+    
 
   private final RelativeEncoder encoder = superneo.getEncoder();
 
@@ -146,11 +151,11 @@ public class Shooter extends SubsystemBase {
     
     if (encoder.getPosition() > posctrl.getSetpoint()) {
       superneo.set(0.2);
-      BigFlyWheel.set(filter.calculate(0.5));
-      SmallFlyWheel.set(filter.calculate(0.5));
+      BigFlyWheel.set(0.3);
+      SmallFlyWheel.set(0.3);
     } else {
-      BigFlyWheel.set(filter.calculate(0.5));
-      SmallFlyWheel.set(filter.calculate(0.5));
+      BigFlyWheel.set(0.5);
+      SmallFlyWheel.set(0.5);
       superneo.set(0);
       indexerMT.set(0.5);
     }
@@ -181,8 +186,8 @@ public class Shooter extends SubsystemBase {
   public Command shootAuto() {
     return Commands.sequence(
         Commands.parallel(
-            Commands.runOnce(() -> BigFlyWheel.set(filter.calculate(0.5))),
-            Commands.runOnce(() -> SmallFlyWheel.set(filter.calculate(0.5)))),
+            Commands.run(() -> BigFlyWheel.set(0.5)),
+            Commands.run(() -> SmallFlyWheel.set(0.5)),
         Commands.waitSeconds(0.8),
         Commands.runOnce(() -> indexerMT.set(0.5)),
         Commands.waitSeconds(3.0),
@@ -190,6 +195,6 @@ public class Shooter extends SubsystemBase {
           BigFlyWheel.set(0);
           SmallFlyWheel.set(0);
           indexerMT.set(0);
-        }));
+        })));
   }
 }
