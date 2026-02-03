@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.geometry.Pose3d;
 
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -44,10 +45,9 @@ public class Shooter extends SubsystemBase {
   public WaitCommand timmer;
   private Pose3d relativePoseToTag;
   private double distanceToTag;
-  SlewRateLimiter filter = new SlewRateLimiter(0.5);
-  public double targetSpeed = 0.8;
   public double smoothSpeed;
-    
+  public double targetSpeed = 0.8;
+  SlewRateLimiter filter = new SlewRateLimiter(0.5);
 
   private final RelativeEncoder encoder = superneo.getEncoder();
 
@@ -126,7 +126,8 @@ public class Shooter extends SubsystemBase {
   // 取角度
   public void angle(double angle) {
     posctrl.setSetpoint(angle, SparkMax.ControlType.kPosition);
-    // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y offset, then calculate to get distance
+    // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y
+    // offset, then calculate to get distance
     relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
     distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
     // 學長賽高!!!
@@ -144,57 +145,56 @@ public class Shooter extends SubsystemBase {
 
   }
 
-  // 判斷是否在角度
+  // 改return了，但我不會MotionMagic QAQ
+  // 我相信機構，0.3->0.5，10不會追殺我
   public Command shoot() {
-    return Commands.run(()->{
-       angle(angle1);
-    
-    if (encoder.getPosition() > posctrl.getSetpoint()) {
-      superneo.set(0.2);
-      BigFlyWheel.set(0.3);
-      SmallFlyWheel.set(0.3);
-    } else {
-      BigFlyWheel.set(0.5);
-      SmallFlyWheel.set(0.5);
-      superneo.set(0);
-      indexerMT.set(0.5);
-    }
+    return Commands.run(() -> {
+      angle(angle1);
+
+      if (encoder.getPosition() > posctrl.getSetpoint()) {
+        superneo.set(0.2);
+        BigFlyWheel.set(0.3);
+        SmallFlyWheel.set(0.3);
+      } else {
+        BigFlyWheel.set(0.5);
+        SmallFlyWheel.set(0.5);
+        superneo.set(0);
+        indexerMT.set(0.5);
+      }
 
     });
-    
-   
-    
+
   }
 
   public Command back() {
-    return Commands.run(()->{
-       posctrl.setSetpoint(angle1, SparkMax.ControlType.kPosition);
+    return Commands.run(() -> {
+      posctrl.setSetpoint(angle1, SparkMax.ControlType.kPosition);
 
-    BigFlyWheel.set(0);
-    SmallFlyWheel.set(0);
-    if (encoder.getPosition() < posctrl.getSetpoint()) {
-      superneo.set(-0.2);
+      BigFlyWheel.set(0);
+      SmallFlyWheel.set(0);
+      if (encoder.getPosition() < posctrl.getSetpoint()) {
+        superneo.set(-0.2);
 
-    } else {
-      superneo.set(0);
-      indexerMT.set(0);
-    }
+      } else {
+        superneo.set(0);
+        indexerMT.set(0);
+      }
     });
-    
-  }
 
+  }
+  // 許盈萱改了，但她丟auto
   public Command shootAuto() {
     return Commands.sequence(
         Commands.parallel(
             Commands.run(() -> BigFlyWheel.set(0.5)),
             Commands.run(() -> SmallFlyWheel.set(0.5)),
-        Commands.waitSeconds(0.8),
-        Commands.runOnce(() -> indexerMT.set(0.5)),
-        Commands.waitSeconds(3.0),
-        Commands.runOnce(() -> {
-          BigFlyWheel.set(0);
-          SmallFlyWheel.set(0);
-          indexerMT.set(0);
-        })));
+            Commands.waitSeconds(0.8),
+            Commands.runOnce(() -> indexerMT.set(0.5)),
+            Commands.waitSeconds(3.0),
+            Commands.runOnce(() -> {
+              BigFlyWheel.set(0);
+              SmallFlyWheel.set(0);
+              indexerMT.set(0);
+            })));
   }
 }
