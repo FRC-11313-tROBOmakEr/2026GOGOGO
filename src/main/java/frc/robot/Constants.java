@@ -2,7 +2,7 @@ package frc.robot;
 
 public final class Constants {
 
-    public static class IntakeContants {
+    public static class IntakeConstants {
         public static final int Intake_Roller_ID = 21;
         public static final int Intake_Ctrl_ID = 22;
 
