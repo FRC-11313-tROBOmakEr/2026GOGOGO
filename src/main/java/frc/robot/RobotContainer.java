@@ -105,18 +105,18 @@ public class RobotContainer {
         xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
 
         // intake按鍵
-        xboxController.y().whileTrue(intake.intakeAndExtension())
+        xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
                 .onFalse(intake.stopIntakeAndBack());
 
         // climber按鍵
         xboxController.leftBumper()
-                .whileTrue(climber.Climber_Out());// 執行的動作//抓住然後捲線
+                .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
         xboxController.rightBumper()
-                .whileTrue(climber.Climber_Back());
+                .whileTrue(climber.Climber_Back(-0.5));
         xboxController.leftTrigger()
-                .whileTrue(climber.Line_Out());
+                .whileTrue(climber.Line_Out(0.5));
         xboxController.rightTrigger()
-                .whileTrue(climber.Line_back());
+                .whileTrue(climber.Line_back(-0.333333));
 
         // .whileTrue(climber.run(()-> climber.extend()))
         // .onFalse((climber.runOnce)()->climber.stop());
