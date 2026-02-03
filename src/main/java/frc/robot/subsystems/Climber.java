@@ -131,8 +131,6 @@ public class Climber extends SubsystemBase {
             autorunLine_Out()).withTimeout(3.0),
         autorunClimber_Back().alongWith(autorunLine_Out()));
   }
-
-
 }
 
 
