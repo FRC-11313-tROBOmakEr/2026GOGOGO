@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 //import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ClimberConstants;
@@ -18,7 +17,6 @@ public class Climber extends SubsystemBase {
   private TalonFX climberMotor = new TalonFX(ClimberConstants.climberMotor_ID ,"canbus");
   private TalonFX tubeMotor1 = new TalonFX(ClimberConstants.tubeMotor1_ID ,"canbus");
   private TalonFX tubeMotor2 = new TalonFX(ClimberConstants.tubeMotor2_ID ,"canbus");
-  private Timer timer = new Timer();
   private Follower follower ;
 
   public void Init() {
@@ -81,34 +79,28 @@ public class Climber extends SubsystemBase {
 
 
   public Command Line_Out() {
-    timer.reset();
-    timer.start();
-
-    return Commands.runOnce(
-        () -> {
-          if (timer.hasElapsed(2)){  // 暫定
-            tubeMotor1.set(0); // 暫定
-          }
-          else {
-            tubeMotor1.set(0.5);
-          }
-        },this);
-       // 捲線
+        return Commands.sequence(
+      Commands.run(() -> {
+  tubeMotor1.set(0.5);
+      }, this),
+      Commands.waitSeconds(2),  // 暫定
+      Commands.run(() -> {
+        tubeMotor1.set(0);
+      }, this)
+    );
+    // 捲線
   }
 
   public Command Line_back() {
-    timer.reset();
-    timer.start();
-
-    return Commands.runOnce(
-        () -> {
-          if (timer.hasElapsed(2)){  // 暫定
-            tubeMotor1.set(-0.3); // 暫定
-          }
-          else {
-          tubeMotor2.set(-0.5);
-          }
-        }, this);
+      return Commands.sequence(
+      Commands.run(() -> {
+        tubeMotor1.set(-0.333333333);
+      }, this),
+      Commands.waitSeconds(3),  // 暫定
+      Commands.run(() -> {
+        tubeMotor1.set(0);
+      }, this)
+    );
       // 放線
       //慢
   }
