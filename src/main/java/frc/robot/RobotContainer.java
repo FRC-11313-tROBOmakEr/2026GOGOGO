@@ -106,7 +106,7 @@ public class RobotContainer {
 
         // intake按鍵
         xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
-                .onFalse(intake.stopIntakeAndBack());
+                .onFalse(intake.stopIntakeAndBack(-0.5));
 
         // climber按鍵
         xboxController.leftBumper()
