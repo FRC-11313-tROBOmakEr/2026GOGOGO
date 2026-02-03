@@ -7,11 +7,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.IntakeContants;
+
 
 public class Intake extends SubsystemBase {
 
@@ -19,11 +18,10 @@ public class Intake extends SubsystemBase {
   private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); 
   //控制intake伸縮的馬達
 
-  private final Timer timer = new Timer();
-
   private final SlewRateLimiter intakeLimiter = new SlewRateLimiter(0.5);
   private final SlewRateLimiter extensionLimiter = new SlewRateLimiter(0.5);
-
+  private final SlewRateLimiter UnextensionLimiter = new SlewRateLimiter(-0.5);
+  
   public Intake() {
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     SparkMaxConfig extensionConfig = new SparkMaxConfig();
@@ -45,14 +43,14 @@ public class Intake extends SubsystemBase {
   }
 
   // 指令:吸球和伸出
-  public Command intakeAndExtension() {
+  public Command intakeAndExtension(double speed) {
     return Commands.sequence(
-      Commands.run(() -> {//伸出
-        Intake_Roller.set(0.5);
-        Intake_Ctrl.set(0.5);
+      Commands.run(() -> {              //伸出
+        Intake_Roller.set(intakeLimiter.calculate(speed));
+        Intake_Ctrl.set(extensionLimiter.calculate(speed));
       }, this),
-      Commands.waitSeconds(3),//伸出需要時間
-      Commands.run(() -> {//Ctrl停止,吸球
+      Commands.waitSeconds(3),  //伸出需要時間
+      Commands.run(() -> {              //Ctrl停止,吸球
         Intake_Roller.set(0.5);
         Intake_Ctrl.set(0);
       }, this)
@@ -60,14 +58,14 @@ public class Intake extends SubsystemBase {
   }
 
   // 指令:停止吸球和收回
-  public Command stopIntakeAndBack() {
+  public Command stopIntakeAndBack(double speed) {
     return Commands.sequence(
-      Commands.run(() -> {//收回
+      Commands.run(() -> {              //收回
         Intake_Roller.set(0);
-        Intake_Ctrl.set(-0.5);
+        Intake_Ctrl.set(UnextensionLimiter.calculate(speed));
       }, this),
-      Commands.waitSeconds(3),//收回需要時間
-      Commands.run(() -> {//全部停止
+      Commands.waitSeconds(3),  //收回需要時間
+      Commands.run(() -> {              //全部停止
         Intake_Roller.set(0);
         Intake_Ctrl.set(0);
       }, this)
