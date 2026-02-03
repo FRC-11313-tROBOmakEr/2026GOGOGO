@@ -104,4 +104,36 @@ public class Climber extends SubsystemBase {
       // 放線
       //慢
   }
+
+// Auto
+
+  public Command autorunLine_back(double speed) {//伸長
+    return Commands.run(() -> Line_back(), this);
+  }
+
+  public Command autorunClimber_Out(double speed) {//抓住
+    return Commands.run(() -> Climber_Out(), this);
+  }
+
+ public Command autorunLine_Out(double speed) {//收短
+    return Commands.run(() -> Line_Out(), this);
+  }
+
+   public Command autorunClimber_Back(double speed) {//放開
+    return Commands.run(() -> Climber_Back(), this);
+  }
+
+  
+  public Command Auto() {
+    return Commands.sequence(
+        Commands.parallel(
+            autorunClimber_Back(0.2),
+            autorunLine_Out(0.2)).withTimeout(3.0),
+        autorunClimber_Back(0.2).alongWith(autorunLine_Out(0)));
+  }
+
+
 }
+
+
+
