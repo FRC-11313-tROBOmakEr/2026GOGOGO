@@ -9,15 +9,24 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 //import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ClimberConstants;
+
+
+
 
 public class Climber extends SubsystemBase {
   private TalonFX climberMotor = new TalonFX(ClimberConstants.climberMotor_ID ,"canbus");
   private TalonFX tubeMotor1 = new TalonFX(ClimberConstants.tubeMotor1_ID ,"canbus");
   private TalonFX tubeMotor2 = new TalonFX(ClimberConstants.tubeMotor2_ID ,"canbus");
   private Follower follower ;
+
+  private final SlewRateLimiter climberOutLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter climberBackLimiter = new SlewRateLimiter(-0.5);
+  private final SlewRateLimiter rollerOutLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter rollerBackLimiter = new SlewRateLimiter(-0.333333);
 
   public void Init() {
     //var talonFXConfigs = new TalonFXConfiguration();
@@ -67,21 +76,21 @@ public class Climber extends SubsystemBase {
         //設定來回的PID值(依齒輪比決定)
   }
 
-  public Command Climber_Out() {
+  public Command Climber_Out(double speed) {
     return Commands.runOnce(
-        () -> climberMotor.set(0.5), this);
+        () -> climberMotor.set(climberOutLimiter.calculate(speed)), this);
   }//勾住
 
-  public Command Climber_Back() {
+  public Command Climber_Back(double speed) {
     return Commands.runOnce(
-        () -> climberMotor.set(-0.5), this);
+        () -> climberMotor.set(climberBackLimiter.calculate(speed)), this);
   }//放開
 
 
-  public Command Line_Out() {
+  public Command Line_Out(double speed) {
         return Commands.sequence(
       Commands.run(() -> {
-  tubeMotor1.set(0.5);
+      tubeMotor1.set(rollerOutLimiter.calculate(speed));
       }, this),
       Commands.waitSeconds(2),  // 暫定
       Commands.run(() -> {
@@ -91,10 +100,10 @@ public class Climber extends SubsystemBase {
     // 捲線
   }
 
-  public Command Line_back() {
+  public Command Line_back(double speed) {
       return Commands.sequence(
       Commands.run(() -> {
-        tubeMotor1.set(-0.333333333);
+        tubeMotor1.set(rollerBackLimiter.calculate(speed));
       }, this),
       Commands.waitSeconds(3),  // 暫定
       Commands.run(() -> {
