@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.geometry.Pose3d;
 
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -182,6 +181,7 @@ public class Shooter extends SubsystemBase {
     });
 
   }
+
   // 許盈萱改了，但她丟auto
   public Command shootAuto() {
     return Commands.sequence(
