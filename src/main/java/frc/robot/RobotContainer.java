@@ -18,6 +18,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -105,18 +106,18 @@ public class RobotContainer {
         xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
 
         // intake按鍵
-        xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
+        xboxController.y().whileTrue(Commands.run(()-> {intake.Roller_Out();}))
                 .onFalse(intake.stopIntakeAndBack(-0.5));
 
         // climber按鍵
         xboxController.leftBumper()
-                .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
+                .whileTrue(Commands.run(()->{climber.Climber_Out();}));// 執行的動作//抓住然後捲線
         xboxController.rightBumper()
-                .whileTrue(climber.Climber_Back(-0.5));
+                .whileTrue(Commands.run(()->{climber.Climber_Back();}));
         xboxController.leftTrigger()
-                .whileTrue(climber.Line_Out(0.5));
+                .whileTrue(Commands.run(()->{climber.Line_Out();}));
         xboxController.rightTrigger()
-                .whileTrue(climber.Line_back(-0.333333));
+                .whileTrue(Commands.run(()->{climber.Line_Back();}));
 
         // .whileTrue(climber.run(()-> climber.extend()))
         // .onFalse((climber.runOnce)()->climber.stop());
