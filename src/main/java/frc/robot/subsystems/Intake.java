@@ -27,21 +27,25 @@ public class Intake extends SubsystemBase {
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Roller_Out_P)
                 .i(IntakeConstants.Roller_Out_I)
-                .d(IntakeConstants.Roller_Out_D)
-                .velocityFF(IntakeConstants.Roller_Out_F).maxMotion
-                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+                .d(IntakeConstants.Roller_Out_D);
+        Rollerconfig.closedLoop.feedForward
+                .kV(IntakeConstants.Roller_Out_F);
+        Rollerconfig.closedLoop.maxMotion
+                .cruiseVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
                 .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
-                .allowedClosedLoopError(0.05);
+                .allowedProfileError(0.05);
 
         Rollerconfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Roller_Back_P)
                 .i(IntakeConstants.Roller_Back_I)
-                .d(IntakeConstants.Roller_Back_D)
-                .velocityFF(IntakeConstants.Roller_Back_F).maxMotion
-                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+                .d(IntakeConstants.Roller_Back_D);
+        Rollerconfig.closedLoop.feedForward
+                .kV(IntakeConstants.Roller_Back_F);
+        Rollerconfig.closedLoop.maxMotion
+                .cruiseVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
                 .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
-                .allowedClosedLoopError(0.05);
+                .allowedProfileError(0.05);
 
         SparkMaxConfig CTRLconfig = new SparkMaxConfig();
         // CTRLConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
@@ -49,23 +53,27 @@ public class Intake extends SubsystemBase {
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Intake_Out_P)
                 .i(IntakeConstants.Intake_Out_I)
-                .d(IntakeConstants.Intake_Out_D)
-                .velocityFF(IntakeConstants.Intake_Out_F).maxMotion
-                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+                .d(IntakeConstants.Intake_Out_D);
+        CTRLconfig.closedLoop.feedForward
+                .kV(IntakeConstants.Intake_Out_F);
+        CTRLconfig.closedLoop.maxMotion
+                .cruiseVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
                 .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
-                .allowedClosedLoopError(0.05);
+                .allowedProfileError(0.05);
 
         CTRLconfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Intake_Back_P)
                 .i(IntakeConstants.Intake_Back_I)
-                .d(IntakeConstants.Intake_Back_D)
-                .velocityFF(IntakeConstants.Intake_Back_F).maxMotion
-                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+                .d(IntakeConstants.Intake_Back_D);
+        CTRLconfig.closedLoop.feedForward
+                .kV(IntakeConstants.Intake_Back_F);
+        CTRLconfig.closedLoop.maxMotion
+                .cruiseVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
                 .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
-                .allowedClosedLoopError(0.05);
+                .allowedProfileError(0.05);
 
-        Intake_Roller.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Intake_Roller.configure(Rollerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         Intake_Ctrl.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     // 清空原本設定，套用新的
