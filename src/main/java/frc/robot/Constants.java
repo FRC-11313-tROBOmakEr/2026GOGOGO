@@ -90,8 +90,13 @@ public final class Constants {
         // Shooter Config
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double Shooter_Zero = 178;
-        public static final double Shooter_StartUp = -24;
+        public static final double ShooterB_Zero = 0;
+        public static final double ShooterB_Out = 0;
+        public static final double ShooterB_Back = 0;
+
+        public static final double ShooterS_Zero = 0;
+        public static final double ShooterS_Out = 0;
+        public static final double ShooterS_Back = 0;
 
         // Shooter BigFlyWheel PIDF
         public static final double Shooterb_Out_P = 0;

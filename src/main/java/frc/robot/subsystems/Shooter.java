@@ -41,6 +41,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.Target;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
@@ -55,6 +56,8 @@ public class Shooter extends SubsystemBase {
 
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
+
+  private final Target target = new Target();
 
   private RelativeEncoder encoder;
 
@@ -131,7 +134,7 @@ public class Shooter extends SubsystemBase {
     BFW_Out_PIDConfig.kV = ShooterConstants.Shooterb_Out_F;
     BigFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
 
-    Slot0Configs BFW_Back_PIDConfig = new Slot0Configs();
+    Slot1Configs BFW_Back_PIDConfig = new Slot1Configs();
     BFW_Back_PIDConfig.kP = ShooterConstants.Shooterb_Back_P;
     BFW_Back_PIDConfig.kI = ShooterConstants.Shooterb_Back_I;
     BFW_Back_PIDConfig.kD = ShooterConstants.Shooterb_Back_D;
@@ -147,7 +150,7 @@ public class Shooter extends SubsystemBase {
     SFW_Out_PIDConfig.kV = ShooterConstants.Shooters_Out_F;
     SmallFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
 
-    Slot0Configs SFW_Back_PIDConfig = new Slot0Configs();
+    Slot1Configs SFW_Back_PIDConfig = new Slot1Configs();
     SFW_Back_PIDConfig.kP = ShooterConstants.Shooters_Back_P;
     SFW_Back_PIDConfig.kI = ShooterConstants.Shooters_Back_I;
     SFW_Back_PIDConfig.kD = ShooterConstants.Shooters_Back_D;
@@ -166,18 +169,18 @@ public class Shooter extends SubsystemBase {
 
   // Intake Position
   public void Shooter_Zero() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_Zero));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_Zero));
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Zero));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Zero));
   }
 
   public void Shooter_Out() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
   }
 
   public void Shooter_Back() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.BigFlyWheel_ID).withSlot(1));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.SmallFlyWheel_ID).withSlot(1));
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Back).withSlot(1));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Back).withSlot(1));
   }
 
   public void Encoder() {
