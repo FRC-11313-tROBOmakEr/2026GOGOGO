@@ -104,8 +104,16 @@ public class RobotContainer {
                 // 我加的
                 xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
 
-                // climber按鍵
-                xboxController.leftBumper().whileTrue(new InstantCommand(climber::climbing));
+                // climber按鍵(待定
+                xboxController.leftBumper().whileTrue(new InstantCommand(climber::outing))
+                                .onFalse(new InstantCommand(climber::stopTube));
+                xboxController.rightBumper().whileTrue(new InstantCommand(climber::backing))
+                                .onFalse(new InstantCommand(climber::stopTube));
+
+                xboxController.leftStick().whileTrue(new InstantCommand(climber::holding))
+                                .onFalse(new InstantCommand(climber::stopClimber));
+                xboxController.rightStick().whileTrue(new InstantCommand(climber::opening))
+                                .onFalse(new InstantCommand(climber::stopClimber));
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
                 xboxController.povUp().whileTrue(drivetrain.applyRequest(

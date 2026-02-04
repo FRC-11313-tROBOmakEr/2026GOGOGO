@@ -1,24 +1,18 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants.ClimberConstants;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
-//import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
-
-import edu.wpi.first.wpilibj.DriverStation;
-//import edu.wpi.first.wpilibj2.command.Command;
-//import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.ClimberConstants;
-//import com.revrobotics.spark.config.ClosedLoopConfig;
-
-//import com.ctre.phoenix6.controls.VoltageOut;
 
 public class Climber extends SubsystemBase {
 
@@ -85,34 +79,37 @@ public class Climber extends SubsystemBase {
     climberMotor.setControl(new MotionMagicVelocityVoltage(ClimberConstants.Climb_Angle));
   }
 
-  public void Climber_up() {
-    climberMotor.set(0.5);
+  // Command
+  public void outing() {
+    tubeMotor1.set(0.6);
   }
 
-  public void Line_up() {
-    tubeMotor1.set(0.5);
+  public void backing() {
+    tubeMotor1.set(-0.6);
   }
 
-  public void Climber_down() {
-    climberMotor.set(-0.5);
+  public void holding() {
+    climberMotor.set(0.4);
   }
 
-  public void Line_down() {
-    tubeMotor1.set(-0.5);
+  public void opening() {
+    climberMotor.set(-0.4);
   }
 
-  public void Stop() {
-    climberMotor.set(0);
+  // 停止收線
+  public void stopTube() {
     tubeMotor1.set(0);
   }
 
-  public void StopAll() {
+  // 停止勾吊掛的桿子
+  public void stopClimber() {
+    climberMotor.set(0);
+  }
+
+  // 停止所有的馬達(永久)(遊戲停止時)
+  public void stopAll() {
     climberMotor.stopMotor();
     tubeMotor1.stopMotor();
   }
 
-  // Command
-  public void climbing() {
-    // 要放command
-  }
 }
