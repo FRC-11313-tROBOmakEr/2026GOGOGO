@@ -3,7 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
-    public final CANBus canBus = new CANBus("canbus");
+    public final CANBus CANIVORE_BUS = new CANBus("canbus");
 
     public static class IntakeContants {
         public static final int Intake_Roller_ID = 21;
