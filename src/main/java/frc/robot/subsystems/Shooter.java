@@ -28,13 +28,14 @@ import com.revrobotics.RelativeEncoder;
 
 
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
 
 public class Shooter extends SubsystemBase {
-  private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
-  private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, "canbus");
+  private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
+  private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
   TalonFXConfiguration configuration = new TalonFXConfiguration();
 
 
