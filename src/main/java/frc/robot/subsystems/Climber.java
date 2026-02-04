@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -17,9 +19,9 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 public class Climber extends SubsystemBase {
 
-  private final TalonFX climberMotor = new TalonFX(ClimberConstants.climberMotor_ID, "canbus");
-  private final TalonFX tubeMotor1 = new TalonFX(ClimberConstants.tubeMotor1_ID, "canbus");
-  private final TalonFX tubeMotor2 = new TalonFX(ClimberConstants.tubeMotor2_ID, "canbus");
+  private final TalonFX climberMotor = new TalonFX(ClimberConstants.climberMotor_ID, Constants.CANIVORE_BUS);
+  private final TalonFX tubeMotor1 = new TalonFX(ClimberConstants.tubeMotor1_ID, Constants.CANIVORE_BUS);
+  private final TalonFX tubeMotor2 = new TalonFX(ClimberConstants.tubeMotor2_ID, Constants.CANIVORE_BUS);
 
   public Climber() {
     TalonFXConfiguration climberConfig = new TalonFXConfiguration();
@@ -42,7 +44,7 @@ public class Climber extends SubsystemBase {
     tubeMotor2.getConfigurator().apply(tubeConfig);
 
     tubeMotor2.setControl(new Follower(tubeMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
-    
+
     if (DriverStation.isEnabled()) {
       climberMotor.setControl(new MotionMagicDutyCycle(ClimberConstants.Climb_Zero));
     }
