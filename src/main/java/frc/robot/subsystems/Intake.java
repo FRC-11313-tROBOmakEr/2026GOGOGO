@@ -70,10 +70,6 @@ public class Intake extends SubsystemBase {
 
                 SparkMax.PersistMode.kPersistParameters);
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> f9b88e8e84ece603c2f32ca0ed0dd259893a1080
     // 清空原本設定，套用新的
 
     public void runIntake(double rpm) {
@@ -94,11 +90,7 @@ public class Intake extends SubsystemBase {
 
     public void Intake_Back() {
 
-<<<<<<< HEAD
         conveyorPID.setSetpoint(
-=======
-        conveyorPID.setReference(
->>>>>>> f9b88e8e84ece603c2f32ca0ed0dd259893a1080
                 IntakeConstants.Intake_In,
                 SparkMax.ControlType.kMAXMotionPositionControl,
                 com.revrobotics.spark.ClosedLoopSlot.kSlot1);
