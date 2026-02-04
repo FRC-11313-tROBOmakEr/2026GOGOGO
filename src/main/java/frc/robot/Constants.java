@@ -1,7 +1,9 @@
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
+    public final CANBus CANIVORE_BUS = new CANBus("canbus");
 
 
     public static class IntakeConstants {
