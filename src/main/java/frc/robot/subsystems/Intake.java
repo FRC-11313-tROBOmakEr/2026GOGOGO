@@ -5,6 +5,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.ResetMode;
+import com.revrobotics.PersistMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -63,12 +65,8 @@ public class Intake extends SubsystemBase {
                 .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
                 .allowedClosedLoopError(0.05);
 
-        Intake_Roller.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
-
-                SparkMax.PersistMode.kPersistParameters);
-        Intake_Ctrl.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
-
-                SparkMax.PersistMode.kPersistParameters);
+        Intake_Roller.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Intake_Ctrl.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     // 清空原本設定，套用新的
 
