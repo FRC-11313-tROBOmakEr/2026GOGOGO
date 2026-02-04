@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -9,85 +10,110 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 import frc.robot.Constants.IntakeConstants;
 
+
 public class Intake extends SubsystemBase {
+
 
     private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
     private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
 
+
     private final SparkClosedLoopController intakePID = Intake_Roller.getClosedLoopController();
     private final SparkClosedLoopController conveyorPID = Intake_Ctrl.getClosedLoopController();
 
+
     public Intake() {
         SparkMaxConfig Rollerconfig = new SparkMaxConfig();
-        // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
-        Rollerconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(IntakeConstants.Roller_Out_P)
-                .i(IntakeConstants.Roller_Out_I)
-                .d(IntakeConstants.Roller_Out_D)
-                .velocityFF(IntakeConstants.Roller_Out_F).maxMotion
-                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
-                .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
-                .allowedClosedLoopError(0.05);
+        //RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+       Rollerconfig.closedLoop
+       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+       .p(IntakeConstants.Roller_Out_P)
+       .i(IntakeConstants.Roller_Out_I)
+       .d(IntakeConstants.Roller_Out_D)
+       .allowedClosedLoopError(0.05,ClosedLoopSlot.kSlot0);
+
+
+       Rollerconfig.closedLoop.feedForward
+       .kV(IntakeConstants.Roller_Out_F);            
+
 
         Rollerconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(IntakeConstants.Roller_Back_P)
-                .i(IntakeConstants.Roller_Back_I)
-                .d(IntakeConstants.Roller_Back_D)
-                .velocityFF(IntakeConstants.Roller_Back_F).maxMotion
-                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
-                .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
-                .allowedClosedLoopError(0.05);
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(IntakeConstants.Roller_Back_P)
+        .i(IntakeConstants.Roller_Back_I)
+        .d(IntakeConstants.Roller_Back_D)
+        .allowedClosedLoopError(0.05,ClosedLoopSlot.kSlot0);
+        Rollerconfig.closedLoop.feedForward.kV(IntakeConstants.Roller_Back_F);
 
-        SparkMaxConfig CTRLconfig = new SparkMaxConfig();
-        // CTRLConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
-        CTRLconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(IntakeConstants.Intake_Out_P)
-                .i(IntakeConstants.Intake_Out_I)
-                .d(IntakeConstants.Intake_Out_D)
-                .velocityFF(IntakeConstants.Intake_Out_F).maxMotion
-                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
-                .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
-                .allowedClosedLoopError(0.05);
 
-        CTRLconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(IntakeConstants.Intake_Back_P)
-                .i(IntakeConstants.Intake_Back_I)
-                .d(IntakeConstants.Intake_Back_D)
-                .velocityFF(IntakeConstants.Intake_Back_F).maxMotion
-                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
-                .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
-                .allowedClosedLoopError(0.05);
+        Rollerconfig.closedLoop.maxMotion
+        .cruiseVelocity(IntakeConstants.ROLLER_MAX_VELOCITY, ClosedLoopSlot.kSlot0)
+        .maxAcceleration(IntakeConstants.ROLLER_MAX_ACCEL);
 
+
+       SparkMaxConfig CTRLconfig = new SparkMaxConfig();
+        //RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+       CTRLconfig.closedLoop
+       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+       .p(IntakeConstants.Intake_Out_P)
+       .i(IntakeConstants.Intake_Out_I)
+       .d(IntakeConstants.Intake_Out_D)
+       .allowedClosedLoopError(0.05,ClosedLoopSlot.kSlot0);
+
+
+       CTRLconfig.closedLoop.feedForward
+       .kV(IntakeConstants.Intake_Out_F);
+       
+       CTRLconfig.closedLoop
+       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+       .p(IntakeConstants.Intake_Back_P)
+       .i(IntakeConstants.Intake_Back_I)
+       .d(IntakeConstants.Intake_Back_D)
+       .allowedClosedLoopError(0.05,ClosedLoopSlot.kSlot0);    
+
+
+       CTRLconfig.closedLoop.feedForward
+       .kV(IntakeConstants.Intake_Back_F);
+
+
+       CTRLconfig.closedLoop.maxMotion
+        .cruiseVelocity(IntakeConstants.INTAKE_MAX_VELOCITY, ClosedLoopSlot.kSlot0)
+        .maxAcceleration(IntakeConstants.INTAKE_MAX_ACCEL);
+       
         Intake_Roller.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         Intake_Ctrl.configure(CTRLconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
     // 清空原本設定，套用新的
 
+
     public void runIntake(double rpm) {
         intakePID.setSetpoint(rpm, SparkMax.ControlType.kVelocity);
     }
+
 
     public void runConveyor(double rpm) {
         conveyorPID.setSetpoint(rpm, SparkMax.ControlType.kVelocity);
     }
 
+
     public void Intake_Zero() {
         conveyorPID.setSetpoint(IntakeConstants.Intake_Zero, SparkMax.ControlType.kMAXMotionPositionControl);
     }
+
 
     public void Intake_out() {
         conveyorPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl);
     }
 
+
     public void Intake_Back() {
+
 
         conveyorPID.setSetpoint(
                 IntakeConstants.Intake_In,
@@ -95,29 +121,38 @@ public class Intake extends SubsystemBase {
                 com.revrobotics.spark.ClosedLoopSlot.kSlot1);
     }
 
+
     public void Intake_back() {
         Intake_Ctrl.set(0.9);
     }
+
 
     public void Intake_Stop() {
         Intake_Ctrl.set(0);
     }
 
+
     public void suck() {
         Intake_Roller.set(1);
     }
 
+
     public void shoot() {
         Intake_Roller.set(-0.5);
     }
+
 
     public void Stop() {
         Intake_Ctrl.set(0);
         Intake_Roller.set(0);
     }
 
+
     public void stopAll() {
         Intake_Roller.stopMotor();
         Intake_Ctrl.stopMotor();
     }
 }
+
+
+
