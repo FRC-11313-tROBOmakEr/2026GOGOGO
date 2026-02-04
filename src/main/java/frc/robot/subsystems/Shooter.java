@@ -43,6 +43,8 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Target;
 
+//test
+
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
   private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, "canbus");
@@ -128,33 +130,33 @@ public class Shooter extends SubsystemBase {
         .withMotionMagicCruiseVelocity(ShooterConstants.MAX_VELOCITY));
 
     Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
-    BFW_Out_PIDConfig.kP = ShooterConstants.Shooterb_Out_P;
-    BFW_Out_PIDConfig.kI = ShooterConstants.Shooterb_Out_I;
-    BFW_Out_PIDConfig.kD = ShooterConstants.Shooterb_Out_D;
-    BFW_Out_PIDConfig.kV = ShooterConstants.Shooterb_Out_F;
+    BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
+    BFW_Out_PIDConfig.kI = ShooterConstants.ShooterB_Out_I;
+    BFW_Out_PIDConfig.kD = ShooterConstants.ShooterB_Out_D;
+    BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
     BigFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
 
     Slot1Configs BFW_Back_PIDConfig = new Slot1Configs();
-    BFW_Back_PIDConfig.kP = ShooterConstants.Shooterb_Back_P;
-    BFW_Back_PIDConfig.kI = ShooterConstants.Shooterb_Back_I;
-    BFW_Back_PIDConfig.kD = ShooterConstants.Shooterb_Back_D;
-    BFW_Back_PIDConfig.kV = ShooterConstants.Shooterb_Back_F;
+    BFW_Back_PIDConfig.kP = ShooterConstants.ShooterB_Back_P;
+    BFW_Back_PIDConfig.kI = ShooterConstants.ShooterB_Back_I;
+    BFW_Back_PIDConfig.kD = ShooterConstants.ShooterB_Back_D;
+    BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
     BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
 
     BigFlyWheelConfig.setPosition(0);
 
     Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
-    SFW_Out_PIDConfig.kP = ShooterConstants.Shooters_Out_P;
-    SFW_Out_PIDConfig.kI = ShooterConstants.Shooters_Out_I;
-    SFW_Out_PIDConfig.kD = ShooterConstants.Shooters_Out_D;
-    SFW_Out_PIDConfig.kV = ShooterConstants.Shooters_Out_F;
+    SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
+    SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
+    SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
+    SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
     SmallFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
 
     Slot1Configs SFW_Back_PIDConfig = new Slot1Configs();
-    SFW_Back_PIDConfig.kP = ShooterConstants.Shooters_Back_P;
-    SFW_Back_PIDConfig.kI = ShooterConstants.Shooters_Back_I;
-    SFW_Back_PIDConfig.kD = ShooterConstants.Shooters_Back_D;
-    SFW_Back_PIDConfig.kV = ShooterConstants.Shooters_Back_F;
+    SFW_Back_PIDConfig.kP = ShooterConstants.ShooterS_Back_P;
+    SFW_Back_PIDConfig.kI = ShooterConstants.ShooterS_Back_I;
+    SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
+    SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
     SmallFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
     SmallFlyWheelConfig.setPosition(0);
   }
