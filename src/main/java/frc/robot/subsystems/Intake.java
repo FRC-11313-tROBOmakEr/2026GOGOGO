@@ -16,8 +16,8 @@ import frc.robot.Constants.IntakeContants;
 public class Intake extends SubsystemBase {
 
   private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
-  private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); 
-  //控制intake伸縮的馬達
+  private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  // 控制intake伸縮的馬達
 
   private final Timer timer = new Timer();
 
@@ -49,27 +49,26 @@ public class Intake extends SubsystemBase {
     // timer.reset();
     // timer.start();
     // return Commands.runOnce(() -> {
-    //   if (timer.hasElapsed(3)) {
-    //     Intake_Roller.set(0.5);
-    //     Intake_Ctrl.set(0);
-    //   } else {
-    //     Intake_Roller.set(0.5);
-    //     Intake_Ctrl.set(0.5);
+    // if (timer.hasElapsed(3)) {
+    // Intake_Roller.set(0.5);
+    // Intake_Ctrl.set(0);
+    // } else {
+    // Intake_Roller.set(0.5);
+    // Intake_Ctrl.set(0.5);
 
-    //   }
+    // }
     // }, this);
 
     return Commands.sequence(
-      Commands.run(() -> {
-        Intake_Roller.set(0.5);
-        Intake_Ctrl.set(0.5);
-      }, this),
-      Commands.waitSeconds(3),
-      Commands.run(() -> {
-        Intake_Roller.set(0.5);
-        Intake_Ctrl.set(0);
-      }, this)
-    );
+        Commands.run(() -> {
+          Intake_Roller.set(0.5);
+          Intake_Ctrl.set(0.5);
+        }, this),
+        Commands.waitSeconds(3),
+        Commands.run(() -> {
+          Intake_Roller.set(0.5);
+          Intake_Ctrl.set(0);
+        }, this));
   }
 
   // 指令:停止吸球和收回

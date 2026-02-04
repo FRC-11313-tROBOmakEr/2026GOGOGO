@@ -170,12 +170,12 @@ public class Shooter extends SubsystemBase {
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_Zero));
   }
 
-  public void Intake_out() {
+  public void Shooter_Out() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
   }
 
-  public void Intake_Back() {
+  public void Shooter_Back() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.BigFlyWheel_ID).withSlot(1));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.SmallFlyWheel_ID).withSlot(1));
   }
