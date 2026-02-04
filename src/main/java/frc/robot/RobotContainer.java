@@ -6,6 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+//import java.lang.annotation.Target;
+import frc.robot.subsystems.Target;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -15,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -52,7 +56,6 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController xboxController = new CommandXboxController(0);
-
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     //private final Climber climber = new Climber();
 
@@ -63,6 +66,12 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     //private final Climber climber = new Climber();
     private final Intake intake = new Intake();
+
+    //Target
+    private final Target target = new Target();
+    private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
+        
+    
     //這是intake
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -75,6 +84,18 @@ public class RobotContainer {
                     .withRotationalRate(-xboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
+    
+    
+    //Target
+        xboxController.rightBumper().whileTrue(
+            drivetrain.applyRequest(() -> 
+                aimDrive.withVelocityX(-xboxController.getLeftY() * MaxSpeed)
+                        .withVelocityY(-xboxController.getLeftX() * MaxSpeed)
+                        .withTargetDirection(target.getAimingRotation(drivetrain.getState().Pose))
+            )
+        );
+
+
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -89,14 +110,9 @@ public class RobotContainer {
         ));
        //我加的 
         xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
-       
-
-         xboxController.y()
-        .whileTrue(intake.intakeAndExtension())
-        .onFalse(intake.stopIntakeAndBack());
+        xboxController.y().whileTrue(intake.intakeAndExtension()).onFalse(intake.stopIntakeAndBack());
         
-
-        //pov是xboxcontroller十字按鈕(有上下左右)
+       //pov是xboxcontroller十字按鈕(有上下左右)
         xboxController.povUp().whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
@@ -116,8 +132,6 @@ public class RobotContainer {
         xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-
-
     }
 
      public class AutoRoutines {
@@ -189,13 +203,9 @@ public class RobotContainer {
         configureBindings();
     }
 
-
-    
-
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
         return autoChooser.selectedCommand();
     }
-
 
 }
