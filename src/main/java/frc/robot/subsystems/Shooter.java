@@ -1,227 +1,124 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
-
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.ResetMode;
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.LimelightHelpers;
-import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.IntakeConstants;
 
+public class Intake extends SubsystemBase {
 
-public class Shooter extends SubsystemBase {
-  private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
-  private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, "canbus");
-  TalonFXConfiguration configuration = new TalonFXConfiguration();
+  private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
 
+  private final SparkClosedLoopController intakePID = Intake_Roller.getClosedLoopController();
+  private final SparkClosedLoopController conveyorPID = Intake_Ctrl.getClosedLoopController();
 
-  private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
-  private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
-
-
-  private final SparkClosedLoopController superneoPID = superneo.getClosedLoopController();
-  private final SparkClosedLoopController indexerMTPID = indexerMT.getClosedLoopController();
-
-
-  private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
-  private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
-
-
-  private RelativeEncoder encoder;
-
-
-  private double angle1;
-  public WaitCommand timmer;
-  private Pose3d relativePoseToTag;
-  private double distanceToTag;
-  public double smoothSpeed;
-  public double targetSpeed = 0.8;
-
-
-  public Shooter() {
-
-
-    indexerconfig.closedLoop
+  public Intake() {
+    SparkMaxConfig Rollerconfig = new SparkMaxConfig();
+    // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+    Rollerconfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(0.0001)
-        .i(0.0001)
-        .d(0.001)
-        .velocityFF(0.00017).maxMotion
-        .maxVelocity(2000) // RPM
-        .maxAcceleration(1500) // RPM/s
+        .p(IntakeConstants.Roller_Out_P)
+        .i(IntakeConstants.Roller_Out_I)
+        .d(IntakeConstants.Roller_Out_D)
+        .velocityFF(IntakeConstants.Roller_Out_F).maxMotion
+        .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+        .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
         .allowedClosedLoopError(0.05);
 
-
-    superneoconfig.closedLoop
+    Rollerconfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(0.0001)
-        .i(0.0001)
-        .d(0.001)
-        .velocityFF(0.00017).maxMotion
-        .maxVelocity(2000) // RPM
-        .maxAcceleration(1500) // RPM/s
+        .p(IntakeConstants.Roller_Back_P)
+        .i(IntakeConstants.Roller_Back_I)
+        .d(IntakeConstants.Roller_Back_D)
+        .velocityFF(IntakeConstants.Roller_Back_F).maxMotion
+        .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+        .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
         .allowedClosedLoopError(0.05);
 
-    superneo.configure(superneoconfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    SparkMaxConfig CTRLconfig = new SparkMaxConfig();
+    // CTRLConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+    CTRLconfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(IntakeConstants.Intake_Out_P)
+        .i(IntakeConstants.Intake_Out_I)
+        .d(IntakeConstants.Intake_Out_D)
+        .velocityFF(IntakeConstants.Intake_Out_F).maxMotion
+        .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+        .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
+        .allowedClosedLoopError(0.05);
 
+    CTRLconfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(IntakeConstants.Intake_Back_P)
+        .i(IntakeConstants.Intake_Back_I)
+        .d(IntakeConstants.Intake_Back_D)
+        .velocityFF(IntakeConstants.Intake_Back_F).maxMotion
+        .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+        .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
+        .allowedClosedLoopError(0.05);
 
-    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    Intake_Roller.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
 
+        SparkMax.PersistMode.kPersistParameters);
+    Intake_Ctrl.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
 
-    var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
-    var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
+        SparkMax.PersistMode.kPersistParameters);
+  }
+  // 清空原本設定，套用新的
 
-
-    TalonFXConfiguration bigFlyWheelConfigs = new TalonFXConfiguration();
-    TalonFXConfiguration smallFlyWheelConfigs = new TalonFXConfiguration();
-
-
-    BigFlyWheel.getConfigurator().apply(bigFlyWheelConfigs);
-    SmallFlyWheel.getConfigurator().apply(smallFlyWheelConfigs);
-
-
-    BigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
-    SmallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
-
-
-    BigFlyWheelConfig.apply(new FeedbackConfigs()
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
-
-
-    BigFlyWheelConfig.apply(new MotionMagicConfigs()
-        .withMotionMagicAcceleration(ShooterConstants.MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.MAX_VELOCITY));
-
-
-    SmallFlyWheelConfig.apply(new FeedbackConfigs()
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
-
-
-    SmallFlyWheelConfig.apply(new MotionMagicConfigs()
-        .withMotionMagicAcceleration(ShooterConstants.MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.MAX_VELOCITY));
-
-
-    Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
-    BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
-    BFW_Out_PIDConfig.kI = ShooterConstants.ShooterB_Out_I;
-    BFW_Out_PIDConfig.kD = ShooterConstants.ShooterB_Out_D;
-    BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
-    BigFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
-
-
-    Slot1Configs BFW_Back_PIDConfig = new Slot1Configs();
-    BFW_Back_PIDConfig.kP = ShooterConstants.ShooterB_Back_P;
-    BFW_Back_PIDConfig.kI = ShooterConstants.ShooterB_Back_I;
-    BFW_Back_PIDConfig.kD = ShooterConstants.ShooterB_Back_D;
-    BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
-    BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
-
-
-    BigFlyWheelConfig.setPosition(0);
-
-
-    Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
-    SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
-    SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
-    SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
-    SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
-    SmallFlyWheel.getConfigurator().apply(SFW_Out_PIDConfig);
-
-
-    Slot1Configs SFW_Back_PIDConfig = new Slot1Configs();
-    SFW_Back_PIDConfig.kP = ShooterConstants.ShooterS_Back_P;
-    SFW_Back_PIDConfig.kI = ShooterConstants.ShooterS_Back_I;
-    SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
-    SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
-    SmallFlyWheel.getConfigurator().apply(SFW_Back_PIDConfig);
-    SmallFlyWheelConfig.setPosition(0);
+  public void runIntake(double rpm) {
+    intakePID.setSetpoint(rpm, SparkMax.ControlType.kVelocity);
   }
 
-
-  public double getPositionbig() {
-    return BigFlyWheel.getPosition().getValueAsDouble();
+  public void runConveyor(double rpm) {
+    conveyorPID.setSetpoint(rpm, SparkMax.ControlType.kVelocity);
   }
 
-
-  public double getPositionsmall() {
-    return SmallFlyWheel.getPosition().getValueAsDouble();
+  public void Intake_Zero() {
+    conveyorPID.setSetpoint(IntakeConstants.Intake_Zero, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
-
-  // Intake Position
-  public void Shooter_Zero() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Zero));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Zero));
+  public void Intake_out() {
+    conveyorPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl);
   }
 
+  public void Intake_Back() {
 
-  public void Shooter_Out() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
+    conveyorPID.setSetpoint(
+        IntakeConstants.Intake_In,
+        SparkMax.ControlType.kMAXMotionPositionControl,
+        com.revrobotics.spark.ClosedLoopSlot.kSlot1);
   }
 
-
-  public void Shooter_Back() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Back).withSlot(1));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Back).withSlot(1));
+  public void Intake_back() {
+    Intake_Ctrl.set(0.9);
   }
 
-
-  public void Encoder() {
-    encoder = superneo.getEncoder();
-
-
+  public void Intake_Stop() {
+    Intake_Ctrl.set(0);
   }
 
-
-  // 取角度
-  public void angle() {
-    // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y
-    // offset, then calculate to get distance
-    // jocker->學長
-    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/geometry/Translation2d.html#getDistance(edu.wpi.first.math.geometry.Translation2d)
-    if (LimelightHelpers.getTV(VisionConstants.LLName)) {
-      relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
-      distanceToTag = relativePoseToTag.getTranslation().toTranslation2d().getDistance(new Translation2d(0, 0));
-      double angle = distanceToTag * 0.0475 + 10.36;
-      angle1 = -angle;
-      superneoPID.setReference(angle1, SparkMax.ControlType.kPosition);
-    }
+  public void suck() {
+    Intake_Roller.set(1);
   }
 
+  public void shoot() {
+    Intake_Roller.set(-0.5);
+  }
 
-  public void Indexer() {
-    indexerMT.set(0.6);
+  public void Stop() {
+    Intake_Ctrl.set(0);
+    Intake_Roller.set(0);
+  }
+
+  public void stopAll() {
+    Intake_Roller.stopMotor();
+    Intake_Ctrl.stopMotor();
   }
 }
-
-
-
