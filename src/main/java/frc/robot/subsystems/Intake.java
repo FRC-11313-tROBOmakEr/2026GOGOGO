@@ -1,159 +1,125 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.PersistMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+
+import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
 
-  private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
-  private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
-  // 控制intake伸縮的馬達
+    private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
 
-  private final SlewRateLimiter intakeLimiter = new SlewRateLimiter(0.5);
-  private final SlewRateLimiter extensionLimiter = new SlewRateLimiter(0.5);
-  private final SlewRateLimiter UnextensionLimiter = new SlewRateLimiter(-0.5);
+    private final SparkClosedLoopController intakePID = Intake_Roller.getClosedLoopController();
+    private final SparkClosedLoopController conveyorPID = Intake_Ctrl.getClosedLoopController();
 
-  public Intake() {
-    SparkMaxConfig intakeConfig = new SparkMaxConfig();
-    SparkMaxConfig extensionConfig = new SparkMaxConfig();
+    public Intake() {
+        SparkMaxConfig Rollerconfig = new SparkMaxConfig();
+        // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+        Rollerconfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .p(IntakeConstants.Roller_Out_P)
+                .i(IntakeConstants.Roller_Out_I)
+                .d(IntakeConstants.Roller_Out_D)
+                .velocityFF(IntakeConstants.Roller_Out_F).maxMotion
+                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+                .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
+                .allowedClosedLoopError(0.05);
 
-    intakeConfig.smartCurrentLimit(40)
-        .idleMode(SparkMaxConfig.IdleMode.kBrake);
+        Rollerconfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .p(IntakeConstants.Roller_Back_P)
+                .i(IntakeConstants.Roller_Back_I)
+                .d(IntakeConstants.Roller_Back_D)
+                .velocityFF(IntakeConstants.Roller_Back_F).maxMotion
+                .maxVelocity(IntakeConstants.ROLLER_MAX_ACCEL) // RPM
+                .maxAcceleration(IntakeConstants.ROLLER_MAX_VELOCITY)// RPM/s
+                .allowedClosedLoopError(0.05);
 
-    intakeConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(0.1).i(0).d(0);
+        SparkMaxConfig CTRLconfig = new SparkMaxConfig();
+        // CTRLConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+        CTRLconfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .p(IntakeConstants.Intake_Out_P)
+                .i(IntakeConstants.Intake_Out_I)
+                .d(IntakeConstants.Intake_Out_D)
+                .velocityFF(IntakeConstants.Intake_Out_F).maxMotion
+                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+                .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
+                .allowedClosedLoopError(0.05);
 
-    extensionConfig.smartCurrentLimit(40)
-        .idleMode(SparkMaxConfig.IdleMode.kBrake);
+        CTRLconfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .p(IntakeConstants.Intake_Back_P)
+                .i(IntakeConstants.Intake_Back_I)
+                .d(IntakeConstants.Intake_Back_D)
+                .velocityFF(IntakeConstants.Intake_Back_F).maxMotion
+                .maxVelocity(IntakeConstants.INTAKE_MAX_ACCEL) // RPM
+                .maxAcceleration(IntakeConstants.INTAKE_MAX_VELOCITY) // RPM/s
+                .allowedClosedLoopError(0.05);
 
-    Intake_Roller.configure(intakeConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    Intake_Ctrl.configure(extensionConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-  }
+        Intake_Roller.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
 
-  // 指令:吸球和伸出
-  <<<<<<<HEAD
+                SparkMax.PersistMode.kPersistParameters);
+        Intake_Ctrl.configure(CTRLconfig, SparkMax.ResetMode.kResetSafeParameters,
 
-  public Command intakeAndExtension() {
-    // timer.reset();
-    // timer.start();
-    // return Commands.runOnce(() -> {
-    // if (timer.hasElapsed(3)) {
-    // Intake_Roller.set(0.5);
-    // Intake_Ctrl.set(0);
-    // } else {
-    // Intake_Roller.set(0.5);
-    // Intake_Ctrl.set(0.5);
+                SparkMax.PersistMode.kPersistParameters);
+    }
+    // 清空原本設定，套用新的
 
-    // }
-    // }, this);
+    
+    public void runIntake(double rpm) {
+        intakePID.setReference(rpm, SparkMax.ControlType.kVelocity);
+    }
 
-    return Commands.sequence(
-        Commands.run(() -> {
-          Intake_Roller.set(0.5);
-          Intake_Ctrl.set(0.5);
-        }, this),
-        Commands.waitSeconds(3),
-        Commands.run(() -> {
-          Intake_Roller.set(0.5);
-          Intake_Ctrl.set(0);
-        }, this));
-=======
+    public void runConveyor(double rpm) {
+        conveyorPID.setReference(rpm, SparkMax.ControlType.kVelocity);
+    }
 
-  public Command intakeAndExtension(double speed) {
-    return Commands.sequence(
-      Commands.run(() -> {              //伸出
-        Intake_Roller.set(intakeLimiter.calculate(speed));
-        Intake_Ctrl.set(extensionLimiter.calculate(speed));
-      }, this),
-      Commands.waitSeconds(3),  //伸出需要時間
-      Commands.run(() -> {              //Ctrl停止,吸球
-        Intake_Roller.set(0.5);
+    public void Intake_Zero() {
+        conveyorPID.setReference( IntakeConstants.Intake_Zero, SparkMax.ControlType.kMAXMotionPositionControl);
+    }
+
+    public void Intake_out() {
+        conveyorPID.setReference(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl);
+    }
+
+    public void Intake_Back() {
+
+        conveyorPID.setReference(
+                IntakeConstants.Intake_In,
+                SparkMax.ControlType.kMAXMotionPositionControl,
+                com.revrobotics.spark.ClosedLoopSlot.kSlot1);
+    }
+
+    public void Intake_back() {
+        Intake_Ctrl.set(0.9);
+    }
+
+    public void Intake_Stop() {
         Intake_Ctrl.set(0);
-      }, this)
-    );
->>>>>>> 5ec55ae0e916a184ad7f5bd78793d4a7e57aab3c
-  }
+    }
 
-  // 指令:停止吸球和收回
-  public Command stopIntakeAndBack(double speed) {
-    return Commands.sequence(
-        Commands.run(() -> { // 收回
-          Intake_Roller.set(0);
-          Intake_Ctrl.set(UnextensionLimiter.calculate(speed));
-        }, this),
-        Commands.waitSeconds(3), // 收回需要時間
-        Commands.run(() -> { // 全部停止
-          Intake_Roller.set(0);
-          Intake_Ctrl.set(0);
-        }, this));
+    public void suck() {
+        Intake_Roller.set(1);
+    }
 
-  }
+    public void shoot() {
+        Intake_Roller.set(-0.5);
+    }
 
-  // Auto
-  public Command autorunIntake(double speed) {
-    return Commands.run(() -> Intake_Roller.set(intakeLimiter.calculate(speed)), this);
-  }
+    public void Stop() {
+        Intake_Ctrl.set(0);
+        Intake_Roller.set(0);
+    }
 
-  public Command autorunExtension(double speed) {
-    return Commands.run(() -> Intake_Ctrl.set(extensionLimiter.calculate(speed)), this);
-  }
-
-  public Command autostopAll() {
-    return Commands.runOnce(() -> {
-      Intake_Roller.stopMotor();
-      Intake_Ctrl.stopMotor();
-      intakeLimiter.reset(0);
-      extensionLimiter.reset(0);
-    }, this);
-  }
-
-  public Command AutointakeExtension() {
-    return Commands.sequence(
-        Commands.parallel(
-            autorunIntake(0.2),
-            autorunExtension(0.2)).withTimeout(3.0),
-        autorunIntake(0.2).alongWith(autorunExtension(0)));
-  }
-
-  // 依照實際數值更改
-  public Command autointake1() {
-    return Commands.sequence(
-        autorunExtension(0.4).withTimeout(1.0), // 0-1秒:伸出(馬達加速)
-        autorunExtension(0.4).withTimeout(3.0), // 1-3秒: 伸出
-        autorunIntake(0.5).withTimeout(2.0), // 3-5秒: 開始吸球 (馬達加速)
-        autorunIntake(0.5).withTimeout(3.0), // 5-8秒: 持續吸球
-        autostopAll() // 8秒後停止
-    );
-  }
-
-  public Command autointake2() {
-    return Commands.sequence(
-        autorunIntake(0.5).withTimeout(2.0), // 0~2秒: 開始吸球 (馬達加速)
-        autorunIntake(0.5).withTimeout(3.0), // 2-5秒: 持續吸球
-        autostopAll() // 5秒後停止
-    );
-  }
+    public void stopAll() {
+        Intake_Roller.stopMotor();
+        Intake_Ctrl.stopMotor();
+    }
 }
-
-// public Command auto2cycleintake() {
-// return Commands.sequence(
-// autorunExtension(0.4).withTimeout(3.0), // 0-1秒:伸出(馬達加速)
-// autorunExtension(0.4).withTimeout(2.0), // 1~3秒:伸出
-// autorunIntake(0.5).withTimeout(1.0), //3-5秒:開始吸球(馬達加速)
-// autorunIntake(0.5).withTimeout(8.0), //5-8秒:持續吸球
-// autorunIntake(0.5).withTimeout(1.0), // 6-14秒
-// autostopAll() // 14-15秒
-// );
-// }
-// }
