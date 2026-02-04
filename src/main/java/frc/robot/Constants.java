@@ -34,6 +34,10 @@ public final class Constants {
         public static final double Intake_Back_I = 0;
         public static final double Intake_Back_D = 0;
         public static final double Intake_Back_F = 0;
+
+        public static final boolean Intake_ctrl_Inverted = true;
+        public static final boolean Intake_Roller_Inverted = false;
+
     }
 
     public static class ClimberConstants {
@@ -84,23 +88,21 @@ public final class Constants {
         public static final int superneo_ID = 46; // 待改
 
         // Shooter Config
-        public static final boolean BigFlyWheel_Inverted = false;
-        public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
         public static final double Shooter_Zero = 178;
         public static final double Shooter_StartUp = -24;
 
         // Shooter BigFlyWheel PIDF
-        public static final double Shooter_Out_P = 0;
-        public static final double Shooter_Out_I = 0;
-        public static final double Shooter_Out_D = 0;
-        public static final double Shooter_Out_F = 0;
+        public static final double Shooterb_Out_P = 0;
+        public static final double Shooterb_Out_I = 0;
+        public static final double Shooterb_Out_D = 0;
+        public static final double Shooterb_Out_F = 0;
 
-        public static final double Shooter_Back_P = 0;
-        public static final double Shooter_Back_I = 0;
-        public static final double Shooter_Back_D = 0;
-        public static final double Shooter_Back_F = 0;
+        public static final double Shooterb_Back_P = 0;
+        public static final double Shooterb_Back_I = 0;
+        public static final double Shooterb_Back_D = 0;
+        public static final double Shooterb_Back_F = 0;
 
         // Shooter SmallFlyWheel PIDF
         public static final double Shooters_Out_P = 0;

@@ -11,15 +11,26 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -34,92 +45,144 @@ import frc.robot.Constants.VisionConstants;
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, "canbus");
   private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, "canbus");
-  private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  TalonFXConfiguration configuration = new TalonFXConfiguration();
+
+  private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
   private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
+
+  private final SparkClosedLoopController superneoPID = superneo.getClosedLoopController();
+  private final SparkClosedLoopController conveyorPID = indexerMT.getClosedLoopController();
+
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
+
+  private RelativeEncoder encoder;
+
   private final VoltageOut m_request = new VoltageOut(0);
-  private final SparkClosedLoopController posctrl;
+
   private double angle1;
   public WaitCommand timmer;
   private Pose3d relativePoseToTag;
   private double distanceToTag;
   public double smoothSpeed;
   public double targetSpeed = 0.8;
-  SlewRateLimiter filter = new SlewRateLimiter(0.5);
-
-  private final RelativeEncoder encoder = superneo.getEncoder();
+  private SparkClosedLoopController posctrl;
 
   public Shooter() {
-    // 初始化
-    SmallFlyWheel.setPosition(0);
-    // 回歸原始設定
-    BigFlyWheel.setPosition(0);
-    // 回歸原始設定
 
-    posctrl = superneo.getClosedLoopController();
-    indexerMT.configure(indexerconfig, com.revrobotics.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    superneo.configure(superneoconfig, com.revrobotics.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    indexerconfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(0.0001)
+        .i(0.0001)
+        .d(0.001)
+        .velocityFF(0.00017).maxMotion
+        .maxVelocity(2000) // RPM
+        .maxAcceleration(1500) // RPM/s
+        .allowedClosedLoopError(0.05);
 
-    // BigFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
-    // SmallFlyWheel.getConfigurator().apply(new TalonFXConfiguration());
+    superneoconfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(0.0001)
+        .i(0.0001)
+        .d(0.001)
+        .velocityFF(0.00017).maxMotion
+        .maxVelocity(2000) // RPM
+        .maxAcceleration(1500) // RPM/s
+        .allowedClosedLoopError(0.05);
 
-    var Shooter_Ctrl_Config = BigFlyWheel.getConfigurator();
-    Slot0Configs Shooter_Out_PIDConfig = new Slot0Configs();
-    Shooter_Out_PIDConfig.kP = ShooterConstants.Shooter_Out_P;
-    Shooter_Out_PIDConfig.kI = ShooterConstants.Shooter_Out_I;
-    Shooter_Out_PIDConfig.kD = ShooterConstants.Shooter_Out_D;
-    Shooter_Out_PIDConfig.kV = ShooterConstants.Shooter_Out_F;
-    Shooter_Ctrl_Config.apply(Shooter_Out_PIDConfig);
+    superneo.configure(superneoconfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
+    indexerMT.configure(indexerconfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
 
-    Slot0Configs Shooter_Stop_PIDConfig = new Slot0Configs();
-    Shooter_Stop_PIDConfig.kP = ShooterConstants.Shooter_Back_P;
-    Shooter_Stop_PIDConfig.kI = ShooterConstants.Shooter_Back_I;
-    Shooter_Stop_PIDConfig.kD = ShooterConstants.Shooter_Back_D;
-    Shooter_Stop_PIDConfig.kV = ShooterConstants.Shooter_Back_F;
-    Shooter_Ctrl_Config.apply(Shooter_Stop_PIDConfig);
-    // 設定來回的PID值(依齒輪比決定)
+    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    var Shooters_Ctrl_Config = SmallFlyWheel.getConfigurator();
-    Slot0Configs Shooters_Out_PIDConfig = new Slot0Configs();
-    Shooters_Out_PIDConfig.kP = ShooterConstants.Shooters_Out_P;
-    Shooters_Out_PIDConfig.kI = ShooterConstants.Shooters_Out_I;
-    Shooters_Out_PIDConfig.kD = ShooterConstants.Shooters_Out_D;
-    Shooters_Out_PIDConfig.kV = ShooterConstants.Shooters_Out_F;
-    Shooters_Ctrl_Config.apply(Shooter_Out_PIDConfig);
+    var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
+    var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
 
-    Slot0Configs Shooters_Stop_PIDConfig = new Slot0Configs();
-    Shooters_Stop_PIDConfig.kP = ShooterConstants.Shooters_Back_P;
-    Shooters_Stop_PIDConfig.kI = ShooterConstants.Shooters_Back_I;
-    Shooters_Stop_PIDConfig.kD = ShooterConstants.Shooters_Back_D;
-    Shooters_Stop_PIDConfig.kV = ShooterConstants.Shooters_Back_F;
-    Shooters_Ctrl_Config.apply(Shooter_Stop_PIDConfig);
-    // 設定來回的PID值(依齒輪比決定)
+    TalonFXConfiguration bigFlyWheelConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration smallFlyWheelConfigs = new TalonFXConfiguration();
 
-    // velocityFF 被撇一橫是因為明年就要移除
-    superneoconfig.closedLoop.pid(
-        ShooterConstants.Shooter_Out_P,
-        ShooterConstants.Shooter_Out_I,
-        ShooterConstants.Shooter_Out_D);
-    superneoconfig.closedLoop.velocityFF(ShooterConstants.Shooter_Out_F);
+    BigFlyWheel.getConfigurator().apply(bigFlyWheelConfigs);
+    SmallFlyWheel.getConfigurator().apply(smallFlyWheelConfigs);
 
-    superneoconfig.closedLoop.pid(
-        ShooterConstants.Shooter_Back_P,
-        ShooterConstants.Shooter_Back_I,
-        ShooterConstants.Shooter_Back_D);
-    superneoconfig.closedLoop.velocityFF(ShooterConstants.Shooter_Back_F);
+    BigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
+    SmallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
 
-    indexerconfig.closedLoop.pid(
-        IndexerConstants.indexerMT_Out_P,
-        IndexerConstants.indexerMT_Out_I,
-        IndexerConstants.indexerMT_Out_D);
-    indexerconfig.closedLoop.velocityFF(IndexerConstants.indexerMT_Out_F);
+    BigFlyWheelConfig.apply(new FeedbackConfigs()
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
 
-    indexerconfig.closedLoop.pid(
-        IndexerConstants.indexerMT_Back_P,
-        IndexerConstants.indexerMT_Back_I,
-        IndexerConstants.indexerMT_Back_D);
-    indexerconfig.closedLoop.velocityFF(IndexerConstants.indexerMT_Back_F);
+    BigFlyWheelConfig.apply(new MotionMagicConfigs()
+        .withMotionMagicAcceleration(ShooterConstants.MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(ShooterConstants.MAX_VELOCITY));
+
+    SmallFlyWheelConfig.apply(new FeedbackConfigs()
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
+
+    SmallFlyWheelConfig.apply(new MotionMagicConfigs()
+        .withMotionMagicAcceleration(ShooterConstants.MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(ShooterConstants.MAX_VELOCITY));
+
+    Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
+    BFW_Out_PIDConfig.kP = ShooterConstants.Shooterb_Out_P;
+    BFW_Out_PIDConfig.kI = ShooterConstants.Shooterb_Out_I;
+    BFW_Out_PIDConfig.kD = ShooterConstants.Shooterb_Out_D;
+    BFW_Out_PIDConfig.kV = ShooterConstants.Shooterb_Out_F;
+    BigFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
+
+    Slot0Configs BFW_Back_PIDConfig = new Slot0Configs();
+    BFW_Back_PIDConfig.kP = ShooterConstants.Shooterb_Back_P;
+    BFW_Back_PIDConfig.kI = ShooterConstants.Shooterb_Back_I;
+    BFW_Back_PIDConfig.kD = ShooterConstants.Shooterb_Back_D;
+    BFW_Back_PIDConfig.kV = ShooterConstants.Shooterb_Back_F;
+    BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
+
+    BigFlyWheelConfig.setPosition(0);
+
+    Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
+    SFW_Out_PIDConfig.kP = ShooterConstants.Shooters_Out_P;
+    SFW_Out_PIDConfig.kI = ShooterConstants.Shooters_Out_I;
+    SFW_Out_PIDConfig.kD = ShooterConstants.Shooters_Out_D;
+    SFW_Out_PIDConfig.kV = ShooterConstants.Shooters_Out_F;
+    SmallFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
+
+    Slot0Configs SFW_Back_PIDConfig = new Slot0Configs();
+    SFW_Back_PIDConfig.kP = ShooterConstants.Shooters_Back_P;
+    SFW_Back_PIDConfig.kI = ShooterConstants.Shooters_Back_I;
+    SFW_Back_PIDConfig.kD = ShooterConstants.Shooters_Back_D;
+    SFW_Back_PIDConfig.kV = ShooterConstants.Shooters_Back_F;
+    SmallFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
+    SmallFlyWheelConfig.setPosition(0);
+  }
+
+  public double getPositionbig() {
+    return BigFlyWheel.getPosition().getValueAsDouble();
+  }
+
+  public double getPositionsmall() {
+    return SmallFlyWheel.getPosition().getValueAsDouble();
+  }
+
+  // Intake Position
+  public void Shooter_Zero() {
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_Zero));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_Zero));
+  }
+
+  public void Intake_out() {
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.Shooter_StartUp));
+  }
+
+  public void Intake_Back() {
+    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.BigFlyWheel_ID).withSlot(1));
+    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.SmallFlyWheel_ID).withSlot(1));
+  }
+
+  public void Encoder() {
+    encoder = superneo.getEncoder();
+
   }
 
   // 取角度
@@ -127,74 +190,13 @@ public class Shooter extends SubsystemBase {
     posctrl.setSetpoint(angle, SparkMax.ControlType.kPosition);
     // Hint: Use LimelightHelpers.getBotPose3d_TargetSpace() to get x offset & y
     // offset, then calculate to get distance
+    // jocker->學長
+    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/geometry/Translation2d.html#getDistance(edu.wpi.first.math.geometry.Translation2d)
+
     relativePoseToTag = LimelightHelpers.getBotPose3d_TargetSpace(VisionConstants.LLName);
     distanceToTag = Math.sqrt(Math.pow(relativePoseToTag.getX(), 2) + Math.pow(relativePoseToTag.getY(), 2));
     // 學長賽高!!!
     angle = distanceToTag * 0.0475 + 10.36;
     angle1 = -angle;
-
-    // 現學物理公式?
-    // 高度差?
-    // g = 9.8
-    // 最大高度要大於砲台? 60 = (初速*sin(angle))^2/2*9.8?
-    // (60*2*9.8^1/2)v0 = sin(angle5)
-    // 到最高度的距離? distance-2=初速^2*sin(2angle)/2*9.8?
-    // 最高設多少?75-15.9626?
-    // 是不是還有摩擦力的東東?QAQ
-
-  }
-
-  // 改return了，但我不會MotionMagic QAQ
-  // 我相信機構，0.3->0.5，10不會追殺我
-  public Command shoot() {
-    return Commands.run(() -> {
-      angle(angle1);
-
-      if (encoder.getPosition() > posctrl.getSetpoint()) {
-        superneo.set(0.2);
-        BigFlyWheel.set(0.3);
-        SmallFlyWheel.set(0.3);
-      } else {
-        BigFlyWheel.set(0.5);
-        SmallFlyWheel.set(0.5);
-        superneo.set(0);
-        indexerMT.set(0.5);
-      }
-
-    });
-
-  }
-
-  public Command back() {
-    return Commands.run(() -> {
-      posctrl.setSetpoint(angle1, SparkMax.ControlType.kPosition);
-
-      BigFlyWheel.set(0);
-      SmallFlyWheel.set(0);
-      if (encoder.getPosition() < posctrl.getSetpoint()) {
-        superneo.set(-0.2);
-
-      } else {
-        superneo.set(0);
-        indexerMT.set(0);
-      }
-    });
-
-  }
-
-  // 許盈萱改了，但她丟auto
-  public Command shootAuto() {
-    return Commands.sequence(
-        Commands.parallel(
-            Commands.run(() -> BigFlyWheel.set(0.5)),
-            Commands.run(() -> SmallFlyWheel.set(0.5)),
-            Commands.waitSeconds(0.8),
-            Commands.runOnce(() -> indexerMT.set(0.5)),
-            Commands.waitSeconds(3.0),
-            Commands.runOnce(() -> {
-              BigFlyWheel.set(0);
-              SmallFlyWheel.set(0);
-              indexerMT.set(0);
-            })));
   }
 }
