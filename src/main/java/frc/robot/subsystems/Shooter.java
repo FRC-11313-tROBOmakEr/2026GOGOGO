@@ -34,6 +34,7 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 
@@ -95,10 +96,10 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(1500) // RPM/s
         .allowedClosedLoopError(0.05);
 
-    superneo.configure(superneoconfig, SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
-    indexerMT.configure(indexerconfig, SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
+    superneo.configure(superneoconfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
