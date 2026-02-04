@@ -13,6 +13,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 public class Climber extends SubsystemBase {
 
@@ -40,8 +41,8 @@ public class Climber extends SubsystemBase {
     tubeMotor1.getConfigurator().apply(tubeConfig);
     tubeMotor2.getConfigurator().apply(tubeConfig);
 
-    tubeMotor2.setControl(new Follower(tubeMotor1.getDeviceID(), false));
-
+    tubeMotor2.setControl(new Follower(tubeMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
+    
     if (DriverStation.isEnabled()) {
       climberMotor.setControl(new MotionMagicDutyCycle(ClimberConstants.Climb_Zero));
     }
