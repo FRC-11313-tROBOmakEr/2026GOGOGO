@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
         SparkMaxConfig Rollerconfig = new SparkMaxConfig();
         // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
         Rollerconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Roller_Out_P)
                 .i(IntakeConstants.Roller_Out_I)
                 .d(IntakeConstants.Roller_Out_D)
@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
                 .allowedClosedLoopError(0.05);
 
         Rollerconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Roller_Back_P)
                 .i(IntakeConstants.Roller_Back_I)
                 .d(IntakeConstants.Roller_Back_D)
@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
         SparkMaxConfig CTRLconfig = new SparkMaxConfig();
         // CTRLConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
         CTRLconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Intake_Out_P)
                 .i(IntakeConstants.Intake_Out_I)
                 .d(IntakeConstants.Intake_Out_D)
@@ -56,7 +56,7 @@ public class Intake extends SubsystemBase {
                 .allowedClosedLoopError(0.05);
 
         CTRLconfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
                 .p(IntakeConstants.Intake_Back_P)
                 .i(IntakeConstants.Intake_Back_I)
                 .d(IntakeConstants.Intake_Back_D)
