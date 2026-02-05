@@ -3,36 +3,25 @@ package frc.robot.Command.Auto;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.*;
 public class Shoot2cycle extends SequentialCommandGroup {
 
-  public final Shooter shooter;
-  public final Intake intake;
 
-  public Shoot2cycle (Shooter shooter, Intake intake) {
-    this.shooter = shooter;
-    this.intake = intake;
+  public Shoot2cycle (Shooter shooter, Intake intake, Shooter Indexer) {
+    
 
     addRequirements(shooter);
     addRequirements(intake);
     addCommands(
-    new ParallelCommandGroup(
-        new InstantCommand(() -> shooter.Shooter_Out(), shooter),
-        new WaitCommand(5.0)
-    ),
-  
-    new ParallelCommandGroup(
-        new InstantCommand(() -> intake.intakeOut(), intake),
-        new WaitCommand(5.0)
-    ),
-    
-    new ParallelCommandGroup(
-        new InstantCommand(() -> shooter.Shooter_Out(), shooter),
-        new WaitCommand(5.0)
-    ),
-
-    new InstantCommand(() -> intake.intakeOut(), intake)
-    );
-    }   
+      new InstantCommand(() ->shooter.angle_out()),
+      new RunCommand(() ->shooter.Shooter_Out(),shooter),
+      new RunCommand(() ->shooter.InxererWorking(), shooter).withTimeout(4.2),
+      new RunCommand(() ->intake.intakeOut(),intake).withTimeout(3),
+      new RunCommand(() ->intake.intake_dont_do_that(), intake), 
+      new RunCommand(() ->intake.suck(), intake),
+      new RunCommand(() ->shooter.Shooter_Out(),shooter).withTimeout(5),
+      new RunCommand(() ->intake.intake_dont_do_that(),intake));
+  } 
+      
   }
