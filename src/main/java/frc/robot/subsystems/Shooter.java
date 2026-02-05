@@ -28,6 +28,7 @@ import com.revrobotics.RelativeEncoder;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
@@ -192,7 +193,7 @@ public class Shooter extends SubsystemBase {
   public void angle_out() {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d("LL")) * 0.3 + 0.145;
+    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
     angle = -angle;
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
@@ -203,7 +204,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void angle_in() {
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d("LL")) * 0.3 + 0.145;
+    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
     angle = -angle;
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
