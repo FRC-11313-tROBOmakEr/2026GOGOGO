@@ -3,13 +3,11 @@ package frc.robot;
 import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
-    public static final CANBus CANIVORE_BUS = new CANBus("canbus");
+    public final CANBus CANIVORE_BUS = new CANBus("canbus");
 
-
-    public static class IntakeConstants {
+    public static class IntakeContants {
         public static final int Intake_Roller_ID = 21;
         public static final int Intake_Ctrl_ID = 22;
-
 
         public static final double Intake_Zero = 0;
         public static final double Intake_Out = 0;
@@ -77,7 +75,6 @@ public final class Constants {
         public static final double Line_Out_D = 0;
         public static final double Line_Out_F = 0;
 
-
         public static final double Line_Back_P = 0;
         public static final double Line_Back_I = 0;
         public static final double Line_Back_D = 0;
@@ -102,7 +99,6 @@ public final class Constants {
         public static final int BigFlyWheel_ID = 44; // 待改
         public static final int SmallFlyWheel_ID = 45; // 待改
         public static final int superneo_ID = 46; // 待改
-
 
         // Shooter Config
         public static final boolean BigFlyWheel_Inverted = false;
@@ -149,25 +145,21 @@ public final class Constants {
         public static final double superneo_Out_D = 0;
         public static final double superneo_Out_F = 0;
 
-
         public static final double superneo_Back_P = 0;
         public static final double superneo_Back_I = 0;
         public static final double suppernet_Back_D = 0;
         public static final double supperneo_Back_F = 0;
 
 
-        // 最大加速度,最大速度
+        //最大加速度,最大速度
         public static final double MAX_ACCEL = 1000;
         public static final double MAX_VELOCITY = 400;
 
-
     }
-
 
     public static class IndexerConstants {
         // IndexerMT ID
         public static final int indexerMT_ID = 47; // 待改
-
 
         // IndexerMT Config
         public static final boolean indexerMT_Inverted = false;
@@ -175,32 +167,24 @@ public final class Constants {
         public static final double indexerMT_Zero = 178;
         public static final double indexerMT_StartUp = -24;
 
-
         // IndexerMT PIDF
         public static final double indexerMT_Out_P = 0;
         public static final double indexerMT_Out_I = 0;
         public static final double indexerMT_Out_D = 0;
         public static final double indexerMT_Out_F = 0;
 
-
         public static final double indexerMT_Back_P = 0;
         public static final double indexerMT_Back_I = 0;
         public static final double indexerMT_Back_D = 0;
         public static final double indexerMT_Back_F = 0;
 
-
-        // 最大加速度,最大速度
+        //最大加速度,最大速度
         public static final double MAX_ACCEL = 1000;
         public static final double MAX_VELOCITY = 400;
 
-
     }
-
 
     public static class VisionConstants {
         public static final String LLName = "light";
     }
-
-
 }
-
