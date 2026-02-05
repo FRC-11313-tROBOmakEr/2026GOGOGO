@@ -116,16 +116,12 @@ public class RobotContainer {
 
                                 new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
-                xboxController.a().whileTrue(shooterout).onFalse(shootin);
+                xboxController.x().whileTrue(shooterout).onFalse(shootin);
                 xboxController.y().whileTrue(intakein).onFalse(intakeout);
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
-                xboxController.povUp().whileTrue(
-
-                                drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-                xboxController.povDown().whileTrue(
-
-                                drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
+                xboxController.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+                xboxController.povDown().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
            
 
@@ -149,10 +145,7 @@ public class RobotContainer {
                 // .onFalse((climber.runOnce)()->climber.stop());
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
-                xboxController.povUp().whileTrue(drivetrain.applyRequest(
-                                () -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-                xboxController.povDown().whileTrue(drivetrain.applyRequest(
-                                () -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
+               
 
                 // Run SysId routines when holdi ng back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
