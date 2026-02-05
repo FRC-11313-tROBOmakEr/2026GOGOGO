@@ -55,7 +55,8 @@ public class Intake extends SubsystemBase {
                                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                 .p(IntakeConstants.Intake_Out_P, ClosedLoopSlot.kSlot0)
                                 .i(IntakeConstants.Intake_Out_I, ClosedLoopSlot.kSlot0)
-                                .d(IntakeConstants.Intake_Out_D, ClosedLoopSlot.kSlot0).maxMotion
+                                .d(IntakeConstants.Intake_Out_D, ClosedLoopSlot.kSlot0)
+                                .maxMotion
                                 .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
                 CTRLconfig.closedLoop.feedForward

@@ -52,8 +52,7 @@ public class Climber extends SubsystemBase {
     climberMotor.getConfigurator().apply(climberConfig);
     tubeMotor1.getConfigurator().apply(tubeConfig);
     tubeMotor2.getConfigurator().apply(tubeConfig);
-
-
+    
     tubeMotor2.setControl(new Follower(tubeMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
 
 
