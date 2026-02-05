@@ -75,26 +75,50 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(1500) // RPM/s
         .allowedClosedLoopError(0.05);
 
+    var Shooter_Ctrl_Config = BigFlyWheel.getConfigurator();
+    Slot0Configs Shooter_Out_PIDConfig = new Slot0Configs();
+    Shooter_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
+    Shooter_Out_PIDConfig.kI = ShooterConstants.ShooterB_Out_I;
+    Shooter_Out_PIDConfig.kD = ShooterConstants.ShooterB_Out_D;
+    Shooter_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
+    Shooter_Ctrl_Config.apply(Shooter_Out_PIDConfig);
 
-    superneoconfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(0.0001)
-        .i(0.0001)
-        .d(0.001)
-        .velocityFF(0.00017).maxMotion
-        .maxVelocity(2000) // RPM
-        .maxAcceleration(1500) // RPM/s
-        .allowedClosedLoopError(0.05);
+    Slot0Configs Shooter_Stop_PIDConfig = new Slot0Configs();
+    Shooter_Stop_PIDConfig.kP = ShooterConstants.ShooterB_Back_P;
+    Shooter_Stop_PIDConfig.kI = ShooterConstants.ShooterB_Back_I;
+    Shooter_Stop_PIDConfig.kD = ShooterConstants.ShooterB_Back_D;
+    Shooter_Stop_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
+    Shooter_Ctrl_Config.apply(Shooter_Stop_PIDConfig);
+    // 設定來回的PID值(依齒輪比決定)
 
-    superneo.configure(superneoconfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    var Shooters_Ctrl_Config = SmallFlyWheel.getConfigurator();
+    Slot0Configs Shooters_Out_PIDConfig = new Slot0Configs();
+    Shooters_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
+    Shooters_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
+    Shooters_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
+    Shooters_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
+    Shooters_Ctrl_Config.apply(Shooter_Out_PIDConfig);
 
+    Slot0Configs Shooters_Stop_PIDConfig = new Slot0Configs();
+    Shooters_Stop_PIDConfig.kP = ShooterConstants.ShooterS_Back_P;
+    Shooters_Stop_PIDConfig.kI = ShooterConstants.ShooterS_Back_I;
+    Shooters_Stop_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
+    Shooters_Stop_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
+    Shooters_Ctrl_Config.apply(Shooter_Stop_PIDConfig);
+    // 設定來回的PID值(依齒輪比決定)
 
-    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    // velocityFF 被撇一橫是因為明年就要移除
+    superneoconfig.closedLoop.pid(
+        ShooterConstants.superneo_Out_P,
+        ShooterConstants.superneo_Out_I,
+        ShooterConstants.superneo_Out_D);
+    superneoconfig.closedLoop.velocityFF(ShooterConstants.superneo_Out_F);
 
+    superneoconfig.closedLoop.pid(
+        ShooterConstants.superneo_Back_P,
+        ShooterConstants.superneo_Back_I,
+        ShooterConstants.superneo_Out_D);
+    superneoconfig.closedLoop.velocityFF(ShooterConstants.superneo_Out_F);
 
     var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
     var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
