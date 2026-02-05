@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -29,10 +27,7 @@ import com.revrobotics.RelativeEncoder;
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.subsystems.Target;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
@@ -53,8 +48,6 @@ public class Shooter extends SubsystemBase {
   private RelativeEncoder encoder;
 
   public WaitCommand timmer;
-  private Pose3d relativePoseToTag;
-  private double distanceToTag;
   public double smoothSpeed;
   public double targetSpeed = 0.8;
   private double angle;

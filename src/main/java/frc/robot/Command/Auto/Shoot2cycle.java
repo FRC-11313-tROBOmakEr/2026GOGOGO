@@ -1,7 +1,6 @@
 package frc.robot.Command.Auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.*;
@@ -22,5 +21,5 @@ public class Shoot2cycle extends SequentialCommandGroup {
       new RunCommand(() ->shooter.Shooter_Out(),shooter).withTimeout(5),
       new RunCommand(() ->intake.intake_dont_do_that(),intake));
   }   
-  
+
   }

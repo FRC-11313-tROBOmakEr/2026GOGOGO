@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
 
