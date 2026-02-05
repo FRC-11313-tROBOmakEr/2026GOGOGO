@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Command;
+package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -55,66 +55,8 @@ public class AutoRoutines {
                 return routine;
         }
 
-        public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbleft");
-                final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
-                routine.active().onTrue(
-                                shootclimbleft.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        public AutoRoutine shootclimbright(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbright");
-                final AutoTrajectory shootclimbright = routine.trajectory("Shootclimbright");
-
-                routine.active().onTrue(
-                                shootclimbright.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        public AutoRoutine shootclimbmid(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbmid");
-                final AutoTrajectory shootclimbmid = routine.trajectory("Shootclimbmid");
-
-                routine.active().onTrue(
-                                shootclimbmid.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        }
-
-        public RobotContainer() {
-                NamedCommands.registerCommand("shoot", shooter.shootAuto());
-                NamedCommands.registerCommand("intake", intake.autointake1());
-                // NamedCommands.registerCommand("climbleft", Climber.climbCommand());
-                // NamedCommands.registerCommand("climbmid", climber.climbCommand());
-                // NamedCommands.registerCommand("climbright", climber.climbCommand());
-
-                autoFactory = drivetrain.createAutoFactory();
-                autoRoutines = new AutoRoutines(autoFactory);
-
-                autoChooser.addRoutine("Shootclimbleft",
-                                () -> autoRoutines.shootclimbleft(shooter.shoot(), climber.Climber_Out()));
-                SmartDashboard.putData("Auto Chooser", autoChooser);
-
-                configureBindings();
-        }
-
-        public Command getAutonomousCommand() {
-                /* Run the routine selected from the auto chooser */
-                return autoChooser.selectedCommand();
-        }
-
-}
-
     public RobotContainer() {
-        NamedCommands.registerCommand("shoot", shooter.shoot());
+        NamedCommands.registerCommand("shoot", shooter.());
         NamedCommands.registerCommand("intake", );
         //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
         //NamedCommands.registerCommand("climbmid", climber.climbCommand());

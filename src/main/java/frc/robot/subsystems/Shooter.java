@@ -183,7 +183,6 @@ public class Shooter extends SubsystemBase {
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
     superneoPID.setSetpoint(ShooterConstants.superneo_Out, SparkMax.ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
-
   }
 
   public void Shooter_Stop() {
