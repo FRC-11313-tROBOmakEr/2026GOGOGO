@@ -43,29 +43,24 @@ public final class Constants {
 
     }
 
+
     public static class ClimberConstants {
         // Climber ID
         public static final int climberMotor_ID = 41; // 待改
         public static final int tubeMotor1_ID = 42; // 待改
         public static final int tubeMotor2_ID = 43; // 待改
 
-        // Climber Confi
 
-        public static final double Climb_Angle = -30;
+        // Climber Confi
         public static final double Climb_Zero = 178;
 
-        public static final double Climb_StartUp = -24;
 
         // Climber PIDF
-        public static final double Climber_Out_P = 0;
-        public static final double Climber_Out_I = 0;
-        public static final double Climber_Out_D = 0;
-        public static final double Climber_Out_F = 0;
+        public static final double Climber_Angle_P = 0;
+        public static final double Climber_Angle_I = 0;
+        public static final double Climber_Angle_D = 0;
+        public static final double Climber_Angle_F = 0;
 
-        public static final double Climber_Back_P = 0;
-        public static final double Climber_Back_I = 0;
-        public static final double Climber_Back_D = 0;
-        public static final double Climber_Back_F = 0;
 
         // Line PIDF
         public static final double Line_Out_P = 0;
@@ -78,8 +73,10 @@ public final class Constants {
         public static final double Line_Back_D = 0;
         public static final double Line_Back_F = 0;
 
+
         public static final double MAX_ACCEL = 1000;
         public static final double MAX_VELOCITY = 400;
+
 
         public static final double floor = 0; // 我還不知道怎麼填 先亂填
         public static final double L1 = 0;
@@ -87,6 +84,7 @@ public final class Constants {
         public static final double L3 = 0;
 
     }
+
 
     public static class ShooterConstants {
         // Shooter ID
@@ -99,30 +97,39 @@ public final class Constants {
         public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double Shooter_Zero = 178;
-        public static final double Shooter_StartUp = -24;
+        public static final double ShooterB_Zero = 0;
+        public static final double ShooterS_Zero = 0;
+        public static final double ShooterB_Out = 3;
+        public static final double ShooterS_Out = 3;
+        public static final double ShooterB_Back = 0;
+        public static final double ShooterS_Back = 0;
+
 
         // Shooter BigFlyWheel PIDF
-        public static final double Shooter_Out_P = 0;
-        public static final double Shooter_Out_I = 0;
-        public static final double Shooter_Out_D = 0;
-        public static final double Shooter_Out_F = 0;
+        public static final double ShooterB_Out_P = 0;
+        public static final double ShooterB_Out_I = 0;
+        public static final double ShooterB_Out_D = 0;
+        public static final double ShooterB_Out_F = 0;
 
-        public static final double Shooter_Back_P = 0;
-        public static final double Shooter_Back_I = 0;
-        public static final double Shooter_Back_D = 0;
-        public static final double Shooter_Back_F = 0;
+
+        public static final double ShooterB_Back_P = 0;
+        public static final double ShooterB_Back_I = 0;
+        public static final double ShooterB_Back_D = 0;
+        public static final double ShooterB_Back_F = 0;
+
 
         // Shooter SmallFlyWheel PIDF
-        public static final double Shooters_Out_P = 0;
-        public static final double Shooters_Out_I = 0;
-        public static final double Shooters_Out_D = 0;
-        public static final double Shooters_Out_F = 0;
+        public static final double ShooterS_Out_P = 0;
+        public static final double ShooterS_Out_I = 0;
+        public static final double ShooterS_Out_D = 0;
+        public static final double ShooterS_Out_F = 0;
 
-        public static final double Shooters_Back_P = 0;
-        public static final double Shooters_Back_I = 0;
-        public static final double Shooters_Back_D = 0;
-        public static final double Shooters_Back_F = 0;
+
+        public static final double ShooterS_Back_P = 0;
+        public static final double ShooterS_Back_I = 0;
+        public static final double ShooterS_Back_D = 0;
+        public static final double ShooterS_Back_F = 0;
+
 
         // Shooter superneo PIDF
         public static final double superneo_Out_P = 0;
