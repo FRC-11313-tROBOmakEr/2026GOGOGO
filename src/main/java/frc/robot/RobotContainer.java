@@ -38,6 +38,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
+
         private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired
                                                                                             // top
                                                                                             // speed
@@ -56,15 +57,10 @@ public class RobotContainer {
         private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-                        
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         private final CommandXboxController xboxController = new CommandXboxController(0);
 
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        // private final Climber climber = new Climber();
-        =======
-        private final CommandXboxController xboxController = new CommandXboxController(0);
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         // private final Climber climber = new Climber();
 
@@ -75,6 +71,7 @@ public class RobotContainer {
         private final Shooter shooter = new Shooter();
         // private final Climber climber = new Climber();
         private final Intake intake = new Intake();
+        private final Climber climber = new Climber();
 
         // Target
         private final Target target = new Target();
@@ -103,41 +100,14 @@ public class RobotContainer {
             )
         );
 
-
->>>>>>> 809171f5da7f5f2b59431d2b046fec52f0cff437
-
-        /* Path follower */
-        private final AutoFactory autoFactory;
-        private final AutoRoutines autoRoutines;
-        private AutoChooser autoChooser;
-
-        <<<<<<<HEAD
-        private final Shooter shooter = new Shooter();
-        private final Climber climber = new Climber();
-        private final Intake intake = new Intake();
-
         private void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
                 drivetrain.setDefaultCommand(
                                 // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive
-                                                                                                                         // forward
-                                                                                                                         // with
-                                                                                                                         // negative
-                                                                                                                         // Y
-                                                                                                                         // (forward)
-                                                .withVelocityY(-xboxController.getLeftX() * MaxSpeed) // Drive left with
-                                                                                                      // negative X
-                                                                                                      // (left)
-                                                .withRotationalRate(-xboxController.getRightX() * MaxAngularRate)
-                                // Drive
-                                // counterclockwise
-                                // with
-                                // negative
-                                // X
-                                // (left)
-                                ));
+                drivetrain.applyRequest(() -> drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive
+                                                   .withVelocityY(-xboxController.getLeftX() * MaxSpeed)                                                                          
+                                                   .withRotationalRate(-xboxController.getRightX() * MaxAngularRate)));
 
                 // Idle while th10e robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
@@ -145,21 +115,21 @@ public class RobotContainer {
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        xboxController.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))
-        ));
-       //我加的 
-        xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
-        xboxController.y().whileTrue(intake.intakeAndExtension()).onFalse(intake.stopIntakeAndBack());
-        
-       //pov是xboxcontroller十字按鈕(有上下左右)
-        xboxController.povUp().whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.5).withVelocityY(0))
-        );
-        xboxController.povDown().whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        );
+                xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
+
+                                new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
+                // 我加的
+                xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+                xboxController.y().whileTrue(Intakein).onFalse(Intakeout);
+
+                // pov是xboxcontroller十字按鈕(有上下左右)
+                xboxController.povUp().whileTrue(
+
+                                drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+                xboxController.povDown().whileTrue(
+
+                                drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
                 xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
                 xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
@@ -172,7 +142,6 @@ public class RobotContainer {
                 xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
                                 .onFalse(intake.stopIntakeAndBack());
 
-<<<<<<< HEAD
                 // climber按鍵
                 xboxController.leftBumper()
                                 .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
@@ -205,7 +174,7 @@ public class RobotContainer {
                 // Reset the field-centric heading on left bumper press.
                 xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-                drivetrain.registerTelemetry(logger::telemeterize);       
+                drivetrain.registerTelemetry(logger::telemeterize);
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
 
@@ -216,84 +185,82 @@ public class RobotContainer {
 
 }
 
-public class AutoRoutines {
-        AutoFactory m_factory;
+        public class AutoRoutines {
+                AutoFactory m_factory;
 
-        public AutoRoutines(AutoFactory factory) {
-                m_factory = factory;
+                public AutoRoutines(AutoFactory factory) {
+                        m_factory = factory;
+                }
+
+                public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake autoIntake) {
+                        final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
+                        final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
+
+                        routine.active().onTrue(
+                                        shoot2cycleAuto.resetOdometry()
+                                                        .andThen(shoot.shootAuto())
+                                                        .andThen(autoIntake.autointake1()));
+                        return routine;
+                }
+
+                public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
+                        final AutoRoutine routine = m_factory.newRoutine("Shootclimbleft");
+                        final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
+                        routine.active().onTrue(
+                                        shootclimbleft.resetOdometry()
+                                                        .andThen(shootCommand)
+                                                        .andThen(climberCommand));
+                        return routine;
+                }
+
+                public AutoRoutine shootclimbright(Command shootCommand, Command climberCommand) {
+                        final AutoRoutine routine = m_factory.newRoutine("Shootclimbright");
+                        final AutoTrajectory shootclimbright = routine.trajectory("Shootclimbright");
+
+                        routine.active().onTrue(
+                                        shootclimbright.resetOdometry()
+                                                        .andThen(shootCommand)
+                                                        .andThen(climberCommand));
+                        return routine;
+                }
+
+                public AutoRoutine shootclimbmid(Command shootCommand, Command climberCommand) {
+                        final AutoRoutine routine = m_factory.newRoutine("Shootclimbmid");
+                        final AutoTrajectory shootclimbmid = routine.trajectory("Shootclimbmid");
+
+                        routine.active().onTrue(
+                                        shootclimbmid.resetOdometry()
+                                                        .andThen(shootCommand)
+                                                        .andThen(climberCommand));
+                        return routine;
+                }
+
+                public void RobotContainer() {
+                        NamedCommands.registerCommand("shoot", shooter.shootAuto());
+                        NamedCommands.registerCommand("intake", intake.autointake1());
+                        // NamedCommands.registerCommand("climbleft", Climber.climbCommand());
+                        // NamedCommands.registerCommand("climbmid", climber.climbCommand());
+                        // NamedCommands.registerCommand("climbright", climber.climbCommand());
+
+                        autoFactory = drivetrain.createAutoFactory();
+                        autoRoutines = new AutoRoutines(autoFactory);
+
+                        autoChooser.addRoutine("Shootclimbleft",
+                                        () -> autoRoutines.shootclimbleft(shooter.shoot(), climber.Climber_Out()));
+                        SmartDashboard.putData("Auto Chooser", autoChooser);
+
+                        configureBindings();
+                }
+
+                public Command getAutonomousCommand() {
+                        /* Run the routine selected from the auto chooser */
+                        return autoChooser.selectedCommand();
+                }
+
         }
-
-        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake autoIntake) {
-                final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
-                final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
-
-                routine.active().onTrue(
-                                shoot2cycleAuto.resetOdometry()
-                                                .andThen(shoot.shootAuto())
-                                                .andThen(autoIntake.autointake1()));
-                return routine;
-        }
-
-        public AutoRoutine shootclimbleft(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbleft");
-                final AutoTrajectory shootclimbleft = routine.trajectory("Shootclimbleft");
-                routine.active().onTrue(
-                                shootclimbleft.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        public AutoRoutine shootclimbright(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbright");
-                final AutoTrajectory shootclimbright = routine.trajectory("Shootclimbright");
-
-                routine.active().onTrue(
-                                shootclimbright.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        public AutoRoutine shootclimbmid(Command shootCommand, Command climberCommand) {
-                final AutoRoutine routine = m_factory.newRoutine("Shootclimbmid");
-                final AutoTrajectory shootclimbmid = routine.trajectory("Shootclimbmid");
-
-                routine.active().onTrue(
-                                shootclimbmid.resetOdometry()
-                                                .andThen(shootCommand)
-                                                .andThen(climberCommand));
-                return routine;
-        }
-
-        }
-
-        public RobotContainer() {
-                NamedCommands.registerCommand("shoot", shooter.shootAuto());
-                NamedCommands.registerCommand("intake", intake.autointake1());
-                // NamedCommands.registerCommand("climbleft", Climber.climbCommand());
-                // NamedCommands.registerCommand("climbmid", climber.climbCommand());
-                // NamedCommands.registerCommand("climbright", climber.climbCommand());
-
-                autoFactory = drivetrain.createAutoFactory();
-                autoRoutines = new AutoRoutines(autoFactory);
-
-                autoChooser.addRoutine("Shootclimbleft",
-                                () -> autoRoutines.shootclimbleft(shooter.shoot(), climber.Climber_Out()));
-                SmartDashboard.putData("Auto Chooser", autoChooser);
-
-                configureBindings();
-        }
-
-        public Command getAutonomousCommand() {
-                /* Run the routine selected from the auto chooser */
-                return autoChooser.selectedCommand();
-        }
-
-}<<<<<<<HEAD=======
 
     public RobotContainer() {
-        NamedCommands.registerCommand("shoot", shooter.shoot());
+        NamedCommands.registerCommand("shoot", );
         NamedCommands.registerCommand("intake", );
         //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
         //NamedCommands.registerCommand("climbmid", climber.climbCommand());
@@ -309,9 +276,8 @@ public class AutoRoutines {
         configureBindings();
     }
 
-    public Command getAutonomousCommand() {
-        /* Run the routine selected from the auto chooser */
-        return autoChooser.selectedCommand();
-    }
-
+        public Command getAutonomousCommand() {
+                /* Run the routine selected from the auto chooser */
+                return autoChooser.selectedCommand();
+        }
 }

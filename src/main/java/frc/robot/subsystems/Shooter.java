@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
   private double distanceToTag;
   public double smoothSpeed;
   public double targetSpeed = 0.8;
-  private double angle1;
+  private double angle;
 
   public Shooter() {
     indexerconfig.closedLoop
@@ -112,7 +112,7 @@ public class Shooter extends SubsystemBase {
     indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    //configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
     var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
@@ -177,30 +177,22 @@ public class Shooter extends SubsystemBase {
   }
 
   // Intake Position
-  public void Shooter_Zero(double rpm) {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Zero));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Zero));
-    superneoPID.setSetpoint(rpm, SparkMax.ControlType.kMAXMotionVelocityControl);
-    indexerMTPID.setSetpoint(rpm, SparkMax.ControlType.kMAXMotionVelocityControl);
-  }
 
   public void Shooter_Out() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
     superneoPID.setSetpoint(ShooterConstants.superneo_Out, SparkMax.ControlType.kMAXMotionPositionControl,
-                                ClosedLoopSlot.kSlot0);
-    indexerMTPID.setSetpoint(ShooterConstants.indexer_Out, SparkMax.ControlType.kMAXMotionPositionControl,
-                                ClosedLoopSlot.kSlot0);
+        ClosedLoopSlot.kSlot0);
 
   }
 
-  public void Shooter_Back() {
+  public void Shooter_Stop() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Back).withSlot(1));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Back).withSlot(1));
     superneoPID.setSetpoint(ShooterConstants.superneo_Back, SparkMax.ControlType.kMAXMotionPositionControl,
-                                ClosedLoopSlot.kSlot0);
+        ClosedLoopSlot.kSlot0);
     indexerMTPID.setSetpoint(ShooterConstants.indexer_Back, SparkMax.ControlType.kMAXMotionPositionControl,
-                                ClosedLoopSlot.kSlot0);
+        ClosedLoopSlot.kSlot0);
   }
 
   public void Encoder() {
@@ -209,29 +201,33 @@ public class Shooter extends SubsystemBase {
   }
 
   // 取角度
- public void angle_out(double angle) {
+  public void angle_out() {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d("LL"))*0.3+0.145;
-    angle1 = -angle;
+    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d("LL")) * 0.3 + 0.145;
+    angle = -angle;
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
-    }else{
+    } else {
       superneo.set(0.2);
-    };
+    }
+    ;
   }
-  
-  public void angle_in(double angle) {
 
-    if (encoder.getPosition() - angle1 > 0.5) {
+  public void angle_in() {
+    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d("LL")) * 0.3 + 0.145;
+    angle = -angle;
+    if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
-    }else{
+    } else {
       superneo.set(-0.2);
-    };
+    }
+    ;
   }
 
   public void InxererWorking() {
-    indexerMT.set(0.6);
+   indexerMTPID.setSetpoint(ShooterConstants.indexer_Out, SparkMax.ControlType.kMAXMotionPositionControl,
+        ClosedLoopSlot.kSlot0);
   }
 
   public void IndexerStop() {

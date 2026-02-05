@@ -73,12 +73,12 @@ public class Climber extends SubsystemBase {
   }
 
 
-  public void Line_out() {
+  public void Line_out() {//1 2s
     climberMotor.setControl(new MotionMagicDutyCycle(IntakeConstants.Intake_Out).withSlot(1));
   }
 
 
-  public void Line_Back() {
+  public void Line_Back() {//2
     tubeMotor1.set(-0.6);
   }
 

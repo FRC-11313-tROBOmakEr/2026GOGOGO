@@ -95,21 +95,24 @@ public class Intake extends SubsystemBase {
                                 ClosedLoopSlot.kSlot0);
         }
 
-        public void intakeBackPosition() {
+        public void intakeBack() {
                 ctrlPID.setSetpoint(IntakeConstants.Intake_In, SparkMax.ControlType.kMAXMotionPositionControl,
                                 ClosedLoopSlot.kSlot1);
         }
 
-        public void setCtrlRaw(double speed) {
-                Intake_Ctrl.set(1);
+        
+        
+        public void intake_dont_do_that() {
+                Intake_Ctrl.set(0);
         }
+
 
         public void suck() {
                 Intake_Roller.set(1.0);
         }
 
         public void shoot() {
-                Intake_Roller.set(-0.5);
+                Intake_Roller.set(0);
         }
 
         public void stopAll() {
