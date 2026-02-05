@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -23,7 +24,8 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants;
@@ -45,7 +47,7 @@ public class Shooter extends SubsystemBase {
 
   private final Target target = new Target();
 
-  private RelativeEncoder encoder;
+  private SparkAbsoluteEncoder encoder;
 
   public WaitCommand timmer;
   public double smoothSpeed;
@@ -53,6 +55,7 @@ public class Shooter extends SubsystemBase {
   private double angle;
 
   public Shooter() {
+    encoder = superneo.getAbsoluteEncoder();
     indexerconfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.indexer_Back_P, ClosedLoopSlot.kSlot0)
@@ -183,10 +186,6 @@ public class Shooter extends SubsystemBase {
     SmallFlyWheel.set(0);
   }
 
-  public void Encoder() {
-    encoder = superneo.getEncoder();
-
-  }
 
   // 取角度
   public void angle_out() {
