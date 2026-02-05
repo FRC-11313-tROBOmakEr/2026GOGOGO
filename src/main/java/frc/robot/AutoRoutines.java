@@ -21,13 +21,13 @@ public class AutoRoutines {
                 m_factory = factory;
         }
 
-        public AutoRoutine shoot2cycle(Shooter shoot, Intake autoIntake) {
-                final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
-                final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
+public AutoRoutine shoot2cycle(Shooter shoot, Intake autoIntake) {
+    final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
+    final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
 
-                routine.active().onTrue(
-                                shoot2cycleAuto.resetOdometry()
-                                                .andThen());
-                return routine;
-        }
+    routine.active().onTrue(
+        shoot2cycleAuto.resetOdometry().andThen(shoot2cycleAuto.cmd()));
+
+    return routine;
+}
 }
