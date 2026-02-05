@@ -11,8 +11,8 @@ public  class Shootin  extends SequentialCommandGroup{
 
   public Shootin(Shooter shooter) {  
     addCommands(  
-    new InstantCommand(() -> shooter.Shooter_Stop(), shooter),
+    new InstantCommand(() -> shooter.stopFlywheels(), shooter),
     new InstantCommand(() -> shooter.angle_in(), shooter),
-    new InstantCommand(() -> shooter.IndexerStop(), shooter));
+    new InstantCommand(() -> shooter.stopIndexer(), shooter));
    
     }}
