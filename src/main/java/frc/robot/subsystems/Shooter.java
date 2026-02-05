@@ -179,7 +179,7 @@ public class Shooter extends SubsystemBase {
         ClosedLoopSlot.kSlot0);
   }
 
-  public void Shooter_Stop() {
+  public void stopFlywheels() {
     BigFlyWheel.stopMotor();
     SmallFlyWheel.stopMotor();
   }
@@ -219,7 +219,7 @@ public class Shooter extends SubsystemBase {
         ClosedLoopSlot.kSlot0);
   }
 
-  public void IndexerStop() {
+  public void stopIndexer() {
     indexerMT.set(0);
   }
 }
