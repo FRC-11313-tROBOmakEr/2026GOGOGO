@@ -179,8 +179,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void Shooter_Stop() {
-    BigFlyWheel.set(0);
-    SmallFlyWheel.set(0);
+    BigFlyWheel.stopMotor();
+    SmallFlyWheel.stopMotor();
   }
 
   public void Encoder() {
