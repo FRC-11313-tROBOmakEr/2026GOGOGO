@@ -44,7 +44,7 @@ public class Target {
 
         return new Rotation2d(Math.atan2(deltaY, deltaX));
     }
-
+//姊姊有看到我嗎
     public double getDistanceToTarget(Pose2d robotPose) {
         return robotPose.getTranslation().getDistance(TargetPose.getTranslation());
     }

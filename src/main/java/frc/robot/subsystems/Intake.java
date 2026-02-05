@@ -6,6 +6,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 
@@ -22,8 +24,9 @@ public class Intake extends SubsystemBase {
         private final SparkClosedLoopController ctrlPID = Intake_Ctrl.getClosedLoopController();
 
         public Intake() {
-                SparkMaxConfig Rollerconfig = new SparkMaxConfig();
-                // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+
+                SparkBaseConfig Rollerconfig = new SparkMaxConfig();
+                Rollerconfig .smartCurrentLimit(40).idleMode(IdleMode.kBrake);
                 Rollerconfig.closedLoop
                                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                 .p(IntakeConstants.Roller_Out_P, ClosedLoopSlot.kSlot0)
@@ -49,7 +52,7 @@ public class Intake extends SubsystemBase {
                                 .maxAcceleration(IntakeConstants.ROLLER_MAX_ACCEL);
 
                 SparkMaxConfig CTRLconfig = new SparkMaxConfig();
-                // RollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+                CTRLconfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
                 CTRLconfig.closedLoop
                                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                 .p(IntakeConstants.Intake_Out_P, ClosedLoopSlot.kSlot0)

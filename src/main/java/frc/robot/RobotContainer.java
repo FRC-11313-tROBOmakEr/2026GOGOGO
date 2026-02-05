@@ -77,11 +77,15 @@ public class RobotContainer {
         private final Target target = new Target();
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
-        private final Shootin shootin ;
+        private  Shootin shootin ;
+        private  Shooterout shooterout;
+        private  Intakein intakein;
+        private  Intakeout intakeout;
+        private  Shoot2cycle shoot2cycle;
           
         
     public RobotContainer() {
-        NamedCommands.registerCommand("leftshoot2cycle", ); 
+        NamedCommands.registerCommand("leftshoot2cycle", shoot2cycle ); 
         SmartDashboard.putData("leftshoot2cycle", autoChooser);
         
         autoFactory = drivetrain.createAutoFactory();
@@ -112,8 +116,8 @@ public class RobotContainer {
 
                                 new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
-                xboxController.a().whileTrue(Shooterout()).onFalse(shootin);
-                xboxController.y().whileTrue(Intakein()).onFalse(Intakeout());
+                xboxController.a().whileTrue(shooterout).onFalse(shootin);
+                xboxController.y().whileTrue(intakein).onFalse(intakeout);
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
                 xboxController.povUp().whileTrue(
@@ -123,13 +127,14 @@ public class RobotContainer {
 
                                 drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
-                // 我加的
-                xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
+           
 
                 // intake按鍵
-                xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
-                                .onFalse(intake.stopIntakeAndBack());
-
+                xboxController.y().whileTrue(intakeout)
+                                  .onFalse(intakein);
+                // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
+                //                 .onFalse(intake.stopIntakeAndBack());
+                //這是啥???
                 // climber按鍵
                 // xboxController.leftBumper()
                 //                 .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
