@@ -4,38 +4,15 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-//import java.lang.annotation.Target;
-import frc.robot.subsystems.Target;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 
-import frc.robot.generated.TunerConstants;
-
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Climber;
+
 import frc.robot.subsystems.Shooter;
+
 
 public class AutoRoutines {
         AutoFactory m_factory;
@@ -44,36 +21,13 @@ public class AutoRoutines {
                 m_factory = factory;
         }
 
-        public AutoRoutine shoot2cycleAuto(Shooter shoot, Intake autoIntake) {
+        public AutoRoutine shoot2cycle(Shooter shoot, Intake autoIntake) {
                 final AutoRoutine routine = m_factory.newRoutine("shoot2CycleAuto");
                 final AutoTrajectory shoot2cycleAuto = routine.trajectory("shoot2CycleAuto");
 
                 routine.active().onTrue(
                                 shoot2cycleAuto.resetOdometry()
-                                                .andThen(shoot.shootAuto())
-                                                .andThen(autoIntake.autointake1()));
+                                                .andThen());
                 return routine;
-        }
-
-    public RobotContainer() {
-        NamedCommands.registerCommand("shoot", shooter.());
-        NamedCommands.registerCommand("intake", );
-        //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
-        //NamedCommands.registerCommand("climbmid", climber.climbCommand());
-        //NamedCommands.registerCommand("climbright", climber.climbCommand());
-
-        autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory);
-
-        autoChooser.addRoutine("Shootclimbleft",
-                () -> autoRoutines.shootclimbleft(Shooter.shoot(), Command.climbLeft()));
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        
-        configureBindings();
-    }
-
-        public Command getAutonomousCommand() {
-                /* Run the routine selected from the auto chooser */
-                return autoChooser.selectedCommand();
         }
 }

@@ -36,6 +36,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
+import frc.robot.Command.Shoot.Shootin;
+import frc.robot.Command.Shoot.Shooterout;
+import frc.robot.Command.Intake.Intakein;
+import frc.robot.Command.Intake.Intakeout;
+import frc.robot.Command.Auto.Shoot2cycle;
 
 public class RobotContainer {
 
@@ -77,30 +82,22 @@ public class RobotContainer {
         private final Target target = new Target();
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
-        // 這是intake
-    private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-xboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-xboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
-    
-    
-    //Target
-        xboxController.rightBumper().whileTrue(
-            drivetrain.applyRequest(() -> 
-                aimDrive.withVelocityX(-xboxController.getLeftY() * MaxSpeed)
-                        .withVelocityY(-xboxController.getLeftX() * MaxSpeed)
-                        .withTargetDirection(target.getAimingRotation(drivetrain.getState().Pose))
-            )
-        );
+        private final Shootin shootin ;
+          
+        
+    public RobotContainer() {
+        NamedCommands.registerCommand("leftshoot2cycle", ); 
+        SmartDashboard.putData("leftshoot2cycle", autoChooser);
+        
+        autoFactory = drivetrain.createAutoFactory();
+        autoRoutines = new AutoRoutines(autoFactory);
+       
+        
+        configureBindings();
+    }
 
-        private void configureBindings() {
+
+        public  void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
                 drivetrain.setDefaultCommand(
@@ -120,8 +117,8 @@ public class RobotContainer {
 
                                 new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
-                xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
-                xboxController.y().whileTrue(Intakein).onFalse(Intakeout);
+                xboxController.a().whileTrue(Shooterout()).onFalse(shootin);
+                xboxController.y().whileTrue(Intakein()).onFalse(Intakeout());
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
                 xboxController.povUp().whileTrue(
@@ -131,10 +128,6 @@ public class RobotContainer {
 
                                 drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
-                xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
-                                .withModuleDirection(new Rotation2d(-xboxController.getLeftY(),
-                                                -xboxController.getLeftX()))));
                 // 我加的
                 xboxController.a().whileTrue(shooter.shoot()).onFalse(shooter.back());
 
@@ -143,14 +136,14 @@ public class RobotContainer {
                                 .onFalse(intake.stopIntakeAndBack());
 
                 // climber按鍵
-                xboxController.leftBumper()
-                                .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
-                xboxController.rightBumper()
-                                .whileTrue(climber.Climber_Back(-0.5));
-                xboxController.leftTrigger()
-                                .whileTrue(climber.Line_Out(0.5));
-                xboxController.rightTrigger()
-                                .whileTrue(climber.Line_back(-0.333333));
+                // xboxController.leftBumper()
+                //                 .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
+                // xboxController.rightBumper()
+                //                 .whileTrue(climber.Climber_Back(-0.5));
+                // xboxController.leftTrigger()
+                //                 .whileTrue(climber.Line_Out(0.5));
+                // xboxController.rightTrigger()
+                //                 .whileTrue(climber.Line_back(-0.333333));
 
                 // .whileTrue(climber.run(()-> climber.extend()))
                 // .onFalse((climber.runOnce)()->climber.stop());
@@ -177,30 +170,6 @@ public class RobotContainer {
                 drivetrain.registerTelemetry(logger::telemeterize);
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
-
-        public Command getAutonomousCommand() {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'getAutonomousCommand'");
-        }
-
-      }
-
-    public RobotContainer() {
-        NamedCommands.registerCommand("shoot", );
-        NamedCommands.registerCommand("intake", );
-        //NamedCommands.registerCommand("climbleft", Climber.climbCommand());
-        //NamedCommands.registerCommand("climbmid", climber.climbCommand());
-        //NamedCommands.registerCommand("climbright", climber.climbCommand());
-
-        autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory);
-
-        autoChooser.addRoutine("Shootclimbleft",
-                () -> autoRoutines.shootclimbleft(Shooter.shoot(), Command.climbLeft()));
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        
-        configureBindings();
-    }
 
         public Command getAutonomousCommand() {
                 /* Run the routine selected from the auto chooser */

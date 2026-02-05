@@ -186,12 +186,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void Shooter_Stop() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Back).withSlot(1));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Back).withSlot(1));
-    superneoPID.setSetpoint(ShooterConstants.superneo_Back, SparkMax.ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
-    indexerMTPID.setSetpoint(ShooterConstants.indexer_Back, SparkMax.ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+    BigFlyWheel.set(0);
+    SmallFlyWheel.set(0);
   }
 
   public void Encoder() {
@@ -224,7 +220,7 @@ public class Shooter extends SubsystemBase {
     ;
   }
 
-  public void InxererWorking() {
+  public void IndexrWorking() {
    indexerMTPID.setSetpoint(ShooterConstants.indexer_Out, SparkMax.ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
   }
