@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -17,21 +18,25 @@ public class Target {
     public Pose2d TargetPose = new Pose2d();
     public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
     private boolean isValidTarget = false;
+    private boolean targetisblue;
 
-    private final Pose2d RED_GOAL = new Pose2d(8.27, 4.035, new Rotation2d());
-    private final Pose2d BLUE_GOAL = new Pose2d(4.03, 4.035, new Rotation2d());
+    private final Pose2d REDPose = new Pose2d(8.27, 4.035, new Rotation2d(180));
+    private final Pose2d BLUEPose = new Pose2d(4.03, 4.035, new Rotation2d(0));
 
-    public void updateTargetStatus(int aprilTagsID) {
+    public void updateTargetStatus(double aprilTagsID) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             if (alliance.get() == Alliance.Red
                     && ((aprilTagsID >= 2 && aprilTagsID <= 5) || (aprilTagsID >= 8 && aprilTagsID <= 11))) {
                 isValidTarget = true;
-                TargetPose = RED_GOAL;
+                TargetPose = REDPose;
+                targetisblue = false;
+
             } else if (alliance.get() == Alliance.Blue
                     && ((aprilTagsID >= 18 && aprilTagsID <= 21) || (aprilTagsID >= 24 && aprilTagsID <= 27))) {
                 isValidTarget = true;
-                TargetPose = BLUE_GOAL;
+                TargetPose = BLUEPose;
+                targetisblue = true;
             } else {
                 isValidTarget = false;
             }
@@ -39,12 +44,21 @@ public class Target {
     }
 
     public Rotation2d getAimingRotation(Pose2d robotPose) {
-        double deltaX = TargetPose.getX() - robotPose.getX();
-        double deltaY = TargetPose.getY() - robotPose.getY();
 
-        return new Rotation2d(Math.atan2(deltaY, deltaX));
+        double redx = REDPose.getX() - robotPose.getX();
+        double redy = REDPose.getY() - robotPose.getY();
+
+        double bluex = BLUEPose.getX() - robotPose.getX();
+        double bluey = BLUEPose.getY() - robotPose.getY();
+
+        if (!targetisblue) {
+            return new Rotation2d(Math.atan2(redx, redy));
+        } 
+        else {
+            return new Rotation2d(Math.atan2(bluex, bluey));
+        }
     }
-//姊姊有看到我嗎
+
     public double getDistanceToTarget(Pose2d robotPose) {
         return robotPose.getTranslation().getDistance(TargetPose.getTranslation());
     }

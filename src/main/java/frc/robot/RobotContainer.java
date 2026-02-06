@@ -74,7 +74,7 @@ public class RobotContainer {
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
         private  Shootin shootin = new Shootin(shooter);
-        private  Shooterout shooterout = new Shooterout(shooter);
+        private  Shooterout shooterout = new Shooterout(shooter, target);
         private  Intakein intakein = new Intakein(intake);
         private  Intakeout intakeout= new Intakeout(intake);
         private  Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake, shooter);
@@ -114,9 +114,8 @@ public class RobotContainer {
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
                 xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
-
-                                new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
+                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
+                                            .withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
                 xboxController.x().whileTrue(shooterout).onFalse(shootin);
                 xboxController.y().whileTrue(intakein).onFalse(intakeout);

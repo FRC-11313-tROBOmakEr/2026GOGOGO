@@ -39,8 +39,7 @@ public class Shooter extends SubsystemBase {
 
   private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
   private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
-
-  private final SparkClosedLoopController superneoPID = superneo.getClosedLoopController();
+  
   private final SparkClosedLoopController indexerMTPID = indexerMT.getClosedLoopController();
 
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
@@ -178,9 +177,7 @@ public class Shooter extends SubsystemBase {
   public void Shooter_Out() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
-    superneoPID.setSetpoint(ShooterConstants.superneo_Out, SparkMax.ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
-  }
+   }
 
   public void stopFlywheels() {
     BigFlyWheel.stopMotor();
@@ -193,9 +190,10 @@ public class Shooter extends SubsystemBase {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
     angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-    angle = -angle;
+    
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
+      angle = -angle;
     } else {
       superneo.set(0.2);
     }
@@ -203,8 +201,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void angle_in() {
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-    angle = -angle;
+    
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
     } else {
