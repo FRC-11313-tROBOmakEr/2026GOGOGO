@@ -20,19 +20,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import frc.robot.command.Auto.Leftshoot2cycle;
+import frc.robot.command.Intake.Intakein;
+import frc.robot.command.Intake.Intakeout;
+import frc.robot.command.Shoot.Shooterout;
+import frc.robot.command.Shoot.Shootin;
 import frc.robot.generated.TunerConstants;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
-
-import frc.robot.Command.Shoot.Shootin;
-import frc.robot.Command.Shoot.Shooterout;
-import frc.robot.Command.Intake.Intakein;
-import frc.robot.Command.Intake.Intakeout;
-import frc.robot.Command.Auto.Leftshoot2cycle;
 
 public class RobotContainer {
 
