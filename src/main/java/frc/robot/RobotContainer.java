@@ -7,23 +7,19 @@ import frc.robot.subsystems.Target;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
+
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
 
 import frc.robot.generated.TunerConstants;
 
@@ -31,11 +27,12 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
+
 import frc.robot.Command.Shoot.Shootin;
 import frc.robot.Command.Shoot.Shooterout;
 import frc.robot.Command.Intake.Intakein;
 import frc.robot.Command.Intake.Intakeout;
-import frc.robot.Command.Auto.Shoot2cycle;
+import frc.robot.Command.Auto.Leftshoot2cycle;
 
 public class RobotContainer {
 
@@ -65,35 +62,40 @@ public class RobotContainer {
         // private final Climber climber = new Climber();
 
         /* Path follower */
-        private final AutoFactory autoFactory;
-        private final AutoRoutines autoRoutines;
-        private final AutoChooser autoChooser = new AutoChooser();
+        private  AutoFactory autoFactory;
+       // private final AutoRoutines autoRoutines;
         private final Shooter shooter = new Shooter();
         // private final Climber climber = new Climber();
         private final Intake intake = new Intake();
-        private final Climber climber = new Climber();
+        //private final Climber climber = new Climber();
 
         // Target
         private final Target target = new Target();
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
-        private  Shootin shootin ;
-        private  Shooterout shooterout;
-        private  Intakein intakein;
-        private  Intakeout intakeout;
-        private  Shoot2cycle shoot2cycle;
-          
-        
+        private  Shootin shootin = new Shootin(shooter);
+        private  Shooterout shooterout = new Shooterout(shooter);
+        private  Intakein intakein = new Intakein(intake);
+        private  Intakeout intakeout= new Intakeout(intake);
+        private  Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake, shooter);
+
+        private final SendableChooser<Command> autoChooser; 
+
     public RobotContainer() {
-        NamedCommands.registerCommand("leftshoot2cycle", shoot2cycle ); 
-        SmartDashboard.putData("leftshoot2cycle", autoChooser);
-        
-        autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory);
-       
-        
+        NamedCommands.registerCommand("leftshoot2cycle", leftshoot2cycle);
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         configureBindings();
     }
+
+
+    
+
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
+
 
 
         public  void configureBindings() {
@@ -163,9 +165,5 @@ public class RobotContainer {
                 drivetrain.registerTelemetry(logger::telemeterize);
                 drivetrain.registerTelemetry(logger::telemeterize);
         }
-
-        public Command getAutonomousCommand() {
-                /* Run the routine selected from the auto chooser */
-                return autoChooser.selectedCommand();
-        }
+    
 }
