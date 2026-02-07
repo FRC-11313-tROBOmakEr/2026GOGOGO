@@ -29,21 +29,25 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
+  private final TalonFX IndexerMT2 = new TalonFX(IndexerConstants.IndexerMT2_ID,Constants.CANIVORE_BUS);
   TalonFXConfiguration configuration = new TalonFXConfiguration();
 
   private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
-  private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax indexerMT1 = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
   
-  private final SparkClosedLoopController indexerMTPID = indexerMT.getClosedLoopController();
+  private final SparkClosedLoopController indexerMTPID = indexerMT1.getClosedLoopController();
 
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
+  private final SparkMaxConfig indexerMT2config = new SparkMaxConfig();
+  
 
   private final Target target = new Target();
 
@@ -105,22 +109,26 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
     superneo.configure(superneoconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    indexerMT1.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
     var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
+    var IndexerMT2config = IndexerMT2.getConfigurator();
 
     TalonFXConfiguration bigFlyWheelConfigs = new TalonFXConfiguration();
     TalonFXConfiguration smallFlyWheelConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration indexerMT2Configs = new TalonFXConfiguration();
 
     BigFlyWheel.getConfigurator().apply(bigFlyWheelConfigs);
     SmallFlyWheel.getConfigurator().apply(smallFlyWheelConfigs);
+    IndexerMT2.getConfigurator().apply(indexerMT2Configs);
 
     BigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
     SmallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
+    IndexerMT2.setNeutralMode(NeutralModeValue.Brake);
 
     BigFlyWheelConfig.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
 
@@ -131,6 +139,11 @@ public class Shooter extends SubsystemBase {
 
     SmallFlyWheelConfig.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
         .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
+
+    IndexerMT2config.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
+
+    IndexerMT2config.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));   
 
     Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
     BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
@@ -146,7 +159,7 @@ public class Shooter extends SubsystemBase {
     BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
     BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
 
-    BigFlyWheelConfig.setPosition(0);
+    BigFlyWheel.setPosition(0);
 
     Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
     SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
@@ -161,7 +174,17 @@ public class Shooter extends SubsystemBase {
     SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
     SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
     SmallFlyWheel.getConfigurator().apply(SFW_Back_PIDConfig);
-    SmallFlyWheelConfig.setPosition(0);
+    SmallFlyWheel.setPosition(0);
+
+    Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
+    Indexerrun_PIDConfig.kP = ShooterConstants.IndexerMT2run_P;
+    Indexerrun_PIDConfig.kI = ShooterConstants.IndexerMT2run_I;
+    Indexerrun_PIDConfig.kD = ShooterConstants.IndexerMT2run_D;
+    Indexerrun_PIDConfig.kV = ShooterConstants.IndexerMT2run_F;
+    IndexerMT2.getConfigurator().apply(Indexerrun_PIDConfig);
+    IndexerMT2.setPosition(0);
+
+
   }
 
   public double getPositionbig() {
@@ -216,6 +239,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stopIndexer() {
-    indexerMT.set(0);
+    indexerMT1.set(0);
   }
 }
