@@ -104,7 +104,7 @@ public class Intake extends SubsystemBase {
 
         
         
-        public void intake_dont_do_that() {
+        public void intake_dont_do_that() { 
                 Intake_Ctrl.set(0);
         }
 

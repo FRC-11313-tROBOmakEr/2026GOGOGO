@@ -1,14 +1,9 @@
 package frc.robot.subsystems;
 
-import frc.robot.LimelightHelpers;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.PointWheelsAt;
 
 //import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -24,7 +19,6 @@ public class Target {
     public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
     private boolean isValidTarget = false;
     private boolean targetisblue;
-    private final PointWheelsAt point = new PointWheelsAt();
 
     private final Pose2d REDPose = new Pose2d(8.27, 4.035, new Rotation2d(180));
     private final Pose2d BLUEPose = new Pose2d(4.03, 4.035, new Rotation2d(0));

@@ -46,7 +46,6 @@ public class Shooter extends SubsystemBase {
 
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
-  private final SparkMaxConfig indexerMT2config = new SparkMaxConfig();
   
 
   private final Target target = new Target();
