@@ -25,12 +25,14 @@ import frc.robot.command.Intake.Intakein;
 import frc.robot.command.Intake.Intakeout;
 import frc.robot.command.Shoot.Shooterout;
 import frc.robot.command.Shoot.Shootin;
+import frc.robot.command.Intake.Intakesuck;
 import frc.robot.generated.TunerConstants;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
+
 
 public class RobotContainer {
 
@@ -75,6 +77,7 @@ public class RobotContainer {
         private  Shooterout shooterout = new Shooterout(shooter, target);
         private  Intakein intakein = new Intakein(intake);
         private  Intakeout intakeout= new Intakeout(intake);
+        private Intakesuck intakesuck = new Intakesuck(intake);
         private  Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake, shooter);
 
         private final SendableChooser<Command> autoChooser; 
@@ -115,8 +118,7 @@ public class RobotContainer {
                 xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
                                             .withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
-                xboxController.x().whileTrue(shooterout).onFalse(shootin);
-                xboxController.y().whileTrue(intakein).onFalse(intakeout);
+                //xboxController.x().whileTrue(shooterout).onFalse(shootin);
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
                 xboxController.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
@@ -125,8 +127,9 @@ public class RobotContainer {
            
 
                 // intake按鍵
-                xboxController.y().whileTrue(intakeout)
-                                  .onFalse(intakein);
+                xboxController.x().whileTrue(intakeout).onFalse(intakein);
+                xboxController.y().whileTrue(intakesuck);
+
                 // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
                 //                 .onFalse(intake.stopIntakeAndBack());
                 //這是啥???

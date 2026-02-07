@@ -7,8 +7,6 @@ public final class Constants {
     public static final CANBus CANIVORE_BUS = new CANBus("canbus");
 
     public static class IntakeConstants {
-        public static final int Intake_Roller_ID = 21;
-        public static final int Intake_Ctrl_ID = 22;
 
         public static final double Intake_Zero = 0;
         public static final double Intake_Out = 0;
@@ -82,8 +80,7 @@ public final class Constants {
     public static class ShooterConstants {
         // Shooter ID
         public static final int BigFlyWheel_ID = 44; // 待改
-        public static final int SmallFlyWheel_ID = 45; // 待改
-        public static final int superneo_ID = 46; // 待改
+        public static final int SmallFlyWheel_ID = 45; // 待改  
 
         // Shooter Config
         public static final boolean BigFlyWheel_Inverted = false;

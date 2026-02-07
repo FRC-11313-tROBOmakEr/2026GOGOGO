@@ -17,8 +17,8 @@ import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
 
-        private final SparkMax Intake_Roller = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
-        private final SparkMax Intake_Ctrl = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+        private final SparkMax Intake_Roller = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
+        private final SparkMax Intake_Ctrl = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
 
         private final SparkClosedLoopController rollerPID = Intake_Roller.getClosedLoopController();
         private final SparkClosedLoopController ctrlPID = Intake_Ctrl.getClosedLoopController();
