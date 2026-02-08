@@ -77,7 +77,7 @@ public class RobotContainer {
         private  Intakein intakein = new Intakein(intake);
         private  Intakeout intakeout= new Intakeout(intake);
         private Intakesuck intakesuck = new Intakesuck(intake);
-        private  Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake, shooter);
+        private  Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake);
 
         private final SendableChooser<Command> autoChooser; 
 

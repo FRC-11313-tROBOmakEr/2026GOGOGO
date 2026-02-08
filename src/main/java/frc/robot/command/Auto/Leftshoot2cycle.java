@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.*;
 public class Leftshoot2cycle extends SequentialCommandGroup {
 
-  public Leftshoot2cycle (Shooter shooter, Intake intake, Shooter Indexer) {
+  public Leftshoot2cycle (Shooter shooter, Intake intake) {
 
     addRequirements(shooter);
     addRequirements(intake);
