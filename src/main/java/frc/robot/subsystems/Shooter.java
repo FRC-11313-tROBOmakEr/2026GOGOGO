@@ -1,6 +1,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -8,6 +10,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import java.util.HashMap;
+import java.util.List;
+
+
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -28,6 +35,7 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 
 
 import frc.robot.LimelightHelpers;
+import frc.robot.Target;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -56,6 +64,9 @@ public class Shooter extends SubsystemBase {
   public double smoothSpeed;
   public double targetSpeed = 0.8;
   private double angle;
+  public Pose2d TargetPose = new Pose2d();
+  public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
+
 
   public Shooter() {
     encoder = superneo.getAbsoluteEncoder();
@@ -240,4 +251,7 @@ public class Shooter extends SubsystemBase {
   public void stopIndexer() {
     indexerMT1.set(0);
   }
+
+
+
 }
