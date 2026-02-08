@@ -18,7 +18,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
