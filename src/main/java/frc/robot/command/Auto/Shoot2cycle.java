@@ -1,4 +1,4 @@
-package frc.robot.Command.Auto;
+package frc.robot.command.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.*;
 public class Shoot2cycle extends SequentialCommandGroup {
 
-  public Shoot2cycle (Shooter shooter, Intake intake, Shooter Indexer) {
+  public Shoot2cycle (Shooter shooter, Intake intake) {
 
     addRequirements(shooter);
     addRequirements(intake);

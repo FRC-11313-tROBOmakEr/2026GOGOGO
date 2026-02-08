@@ -1,6 +1,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -8,6 +10,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import java.util.HashMap;
+import java.util.List;
+
+
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -28,23 +35,26 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 
 
 import frc.robot.LimelightHelpers;
+import frc.robot.Target;
 import frc.robot.Constants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
   private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
+  private final TalonFX IndexerMT2 = new TalonFX(IndexerConstants.IndexerMT2_ID,Constants.CANIVORE_BUS);
   TalonFXConfiguration configuration = new TalonFXConfiguration();
 
   private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
-  private final SparkMax indexerMT = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
-
-  private final SparkClosedLoopController superneoPID = superneo.getClosedLoopController();
-  private final SparkClosedLoopController indexerMTPID = indexerMT.getClosedLoopController();
+  private final SparkMax indexerMT1 = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
+  
+  private final SparkClosedLoopController indexerMTPID = indexerMT1.getClosedLoopController();
 
   private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
   private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
+  
 
   private final Target target = new Target();
 
@@ -54,6 +64,9 @@ public class Shooter extends SubsystemBase {
   public double smoothSpeed;
   public double targetSpeed = 0.8;
   private double angle;
+  public Pose2d TargetPose = new Pose2d();
+  public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
+
 
   public Shooter() {
     encoder = superneo.getAbsoluteEncoder();
@@ -106,22 +119,26 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
     superneo.configure(superneoconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    indexerMT.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    indexerMT1.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
     var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
+    var IndexerMT2config = IndexerMT2.getConfigurator();
 
     TalonFXConfiguration bigFlyWheelConfigs = new TalonFXConfiguration();
     TalonFXConfiguration smallFlyWheelConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration indexerMT2Configs = new TalonFXConfiguration();
 
     BigFlyWheel.getConfigurator().apply(bigFlyWheelConfigs);
     SmallFlyWheel.getConfigurator().apply(smallFlyWheelConfigs);
+    IndexerMT2.getConfigurator().apply(indexerMT2Configs);
 
     BigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
     SmallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
+    IndexerMT2.setNeutralMode(NeutralModeValue.Brake);
 
     BigFlyWheelConfig.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
 
@@ -132,6 +149,11 @@ public class Shooter extends SubsystemBase {
 
     SmallFlyWheelConfig.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
         .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
+
+    IndexerMT2config.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
+
+    IndexerMT2config.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));   
 
     Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
     BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
@@ -147,7 +169,7 @@ public class Shooter extends SubsystemBase {
     BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
     BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
 
-    BigFlyWheelConfig.setPosition(0);
+    BigFlyWheel.setPosition(0);
 
     Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
     SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
@@ -162,7 +184,17 @@ public class Shooter extends SubsystemBase {
     SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
     SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
     SmallFlyWheel.getConfigurator().apply(SFW_Back_PIDConfig);
-    SmallFlyWheelConfig.setPosition(0);
+    SmallFlyWheel.setPosition(0);
+
+    Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
+    Indexerrun_PIDConfig.kP = ShooterConstants.IndexerMT2run_P;
+    Indexerrun_PIDConfig.kI = ShooterConstants.IndexerMT2run_I;
+    Indexerrun_PIDConfig.kD = ShooterConstants.IndexerMT2run_D;
+    Indexerrun_PIDConfig.kV = ShooterConstants.IndexerMT2run_F;
+    IndexerMT2.getConfigurator().apply(Indexerrun_PIDConfig);
+    IndexerMT2.setPosition(0);
+
+
   }
 
   public double getPositionbig() {
@@ -178,9 +210,7 @@ public class Shooter extends SubsystemBase {
   public void Shooter_Out() {
     BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
     SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
-    superneoPID.setSetpoint(ShooterConstants.superneo_Out, SparkMax.ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
-  }
+   }
 
   public void stopFlywheels() {
     BigFlyWheel.stopMotor();
@@ -193,9 +223,10 @@ public class Shooter extends SubsystemBase {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
     angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-    angle = -angle;
+    
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
+      angle = -angle;
     } else {
       superneo.set(0.2);
     }
@@ -203,8 +234,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void angle_in() {
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-    angle = -angle;
+    
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
     } else {
@@ -219,6 +249,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stopIndexer() {
-    indexerMT.set(0);
+    indexerMT1.set(0);
   }
+
+
+
 }

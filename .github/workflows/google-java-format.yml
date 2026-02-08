@@ -1,0 +1,14 @@
+name: Google Java Format
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: axel-op/googlejavaformat-action@v4
+        with:
+          args: "--replace"
