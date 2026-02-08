@@ -18,11 +18,10 @@ import frc.robot.Constants.IntakeConstants;
 public class Intake extends SubsystemBase {
     private final SparkMax roller = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
     // TODO: 命名
-    private final SparkMax intakeDeploy = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
-
+    private final SparkMax Intake_Ctrl = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
 
     private final SparkClosedLoopController rollerPID = roller.getClosedLoopController();
-    private final SparkClosedLoopController ctrlPID = intakeDeploy.getClosedLoopController();
+    private final SparkClosedLoopController ctrlPID = Intake_Ctrl.getClosedLoopController();
 
     public Intake() {
 
@@ -53,35 +52,35 @@ public class Intake extends SubsystemBase {
                 .maxAcceleration(IntakeConstants.ROLLER_MAX_ACCEL);
 
         // TODO: 跟馬達的命名一起改
-        SparkMaxConfig deployConfig = new SparkMaxConfig();
-        deployConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
-        deployConfig.closedLoop
+        SparkMaxConfig ctrlConfig = new SparkMaxConfig();
+        ctrlConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+        ctrlConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .p(IntakeConstants.Intake_Out_P, ClosedLoopSlot.kSlot0)
                 .i(IntakeConstants.Intake_Out_I, ClosedLoopSlot.kSlot0)
                 .d(IntakeConstants.Intake_Out_D, ClosedLoopSlot.kSlot0).maxMotion
                 .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-        deployConfig.closedLoop.feedForward
+        ctrlConfig.closedLoop.feedForward
                 .kV(IntakeConstants.Intake_Out_F, ClosedLoopSlot.kSlot0);
 
-        deployConfig.closedLoop
+        ctrlConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .p(IntakeConstants.Intake_Back_P, ClosedLoopSlot.kSlot1)
                 .i(IntakeConstants.Intake_Back_I, ClosedLoopSlot.kSlot1)
                 .d(IntakeConstants.Intake_Back_D, ClosedLoopSlot.kSlot1).maxMotion
                 .allowedProfileError(0.05, ClosedLoopSlot.kSlot1);
 
-        deployConfig.closedLoop.feedForward
+        ctrlConfig.closedLoop.feedForward
                 .kV(IntakeConstants.Intake_Back_F, ClosedLoopSlot.kSlot1);
 
-        deployConfig.closedLoop.maxMotion
+        ctrlConfig.closedLoop.maxMotion
                 .cruiseVelocity(IntakeConstants.INTAKE_MAX_VELOCITY)
                 .maxAcceleration(IntakeConstants.INTAKE_MAX_ACCEL);
 
         // 清空原本設定，套用新的
         roller.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        intakeDeploy.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        Intake_Ctrl.configure(ctrlConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void setRollerVelocity(double rpm) {
@@ -103,8 +102,8 @@ public class Intake extends SubsystemBase {
                 ClosedLoopSlot.kSlot1);
     }
 
-    public void stopDeploy() { // TODO: 改名字
-        intakeDeploy.stopMotor();
+    public void intake_dont_do_that() { // TODO: 改名字
+        Intake_Ctrl.stopMotor();
     }
 
     public void suck() {
@@ -117,6 +116,6 @@ public class Intake extends SubsystemBase {
 
     public void stopAll() {
         roller.stopMotor();
-        intakeDeploy.stopMotor();
+        Intake_Ctrl.stopMotor();
     }
 }
