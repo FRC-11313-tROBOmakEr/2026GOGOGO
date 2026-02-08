@@ -1,5 +1,5 @@
 
-package frc.robot.command.intake;
+package frc.robot.command.Intake;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -13,7 +13,7 @@ public class Intakein extends SequentialCommandGroup {
 
     addCommands(
      new RunCommand(() ->intake.back(), intake).withTimeout(3),
-     new InstantCommand(() ->intake.intake_dont_do_that(), intake),
+     new InstantCommand(() ->intake.stopDeploy(), intake),
      new InstantCommand(() ->intake.stopRoller(), intake));
   }
 }

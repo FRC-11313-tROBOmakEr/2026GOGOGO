@@ -1,5 +1,5 @@
 
-package frc.robot.command.intake;
+package frc.robot.command.Intake;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -13,7 +13,7 @@ public class Intakeout extends SequentialCommandGroup {
 
     addCommands(
      new RunCommand(() ->intake.out(), intake).withTimeout(3),
-     new RunCommand(() ->intake.intake_dont_do_that(), intake), 
+     new RunCommand(() ->intake.stopDeploy(), intake), 
      new RunCommand(() ->intake.suck(), intake)
     );
   }
