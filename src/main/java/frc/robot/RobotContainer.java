@@ -2,7 +2,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import frc.robot.subsystems.Target;
+// import frc.robot.subsystems.Target;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -73,7 +73,7 @@ public class RobotContainer {
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
         private  Shootin shootin = new Shootin(shooter);
-        private  Shooterout shooterout = new Shooterout(shooter, target, drivetrain);
+        private  Shooterout shooterout = new Shooterout(shooter, drivetrain);
         private  Intakein intakein = new Intakein(intake);
         private  Intakeout intakeout= new Intakeout(intake);
         private Intakesuck intakesuck = new Intakesuck(intake);
