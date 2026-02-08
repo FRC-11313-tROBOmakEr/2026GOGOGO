@@ -6,14 +6,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import java.util.HashMap;
 import java.util.List;
-
 
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -33,7 +31,6 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 
-
 import frc.robot.LimelightHelpers;
 import frc.robot.Target;
 import frc.robot.Constants;
@@ -42,19 +39,17 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
-  private final TalonFX BigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
-  private final TalonFX SmallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
-  private final TalonFX IndexerMT2 = new TalonFX(IndexerConstants.IndexerMT2_ID,Constants.CANIVORE_BUS);
-  TalonFXConfiguration configuration = new TalonFXConfiguration();
+  private final TalonFX bigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
+  private final TalonFX smallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
+  private final TalonFX indexerMotor = new TalonFX(IndexerConstants.IndexerMT2_ID, Constants.CANIVORE_BUS);
+  private final SparkMax angleMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax conveyorMotor = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
 
-  private final SparkMax superneo = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // 旋轉角度
-  private final SparkMax indexerMT1 = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
-  
-  private final SparkClosedLoopController indexerMTPID = indexerMT1.getClosedLoopController();
+  private TalonFXConfiguration baseConfig = new TalonFXConfiguration();
+  private final SparkClosedLoopController conveyorPID = conveyorMotor.getClosedLoopController();
 
-  private final SparkMaxConfig indexerconfig = new SparkMaxConfig();
-  private final SparkMaxConfig superneoconfig = new SparkMaxConfig();
-  
+  private final SparkMaxConfig indexerConfig = new SparkMaxConfig();
+  private final SparkMaxConfig angleConfig = new SparkMaxConfig();
 
   private final Target target = new Target();
 
@@ -67,191 +62,176 @@ public class Shooter extends SubsystemBase {
   public Pose2d TargetPose = new Pose2d();
   public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
 
-
   public Shooter() {
-    encoder = superneo.getAbsoluteEncoder();
-    indexerconfig.closedLoop
+    encoder = angleMotor.getAbsoluteEncoder();
+    indexerConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.indexer_Back_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.indexer_Back_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.indexer_Back_D, ClosedLoopSlot.kSlot0).maxMotion
         .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    indexerconfig.closedLoop.feedForward
+    indexerConfig.closedLoop.feedForward
         .kV(ShooterConstants.indexer_Back_F, ClosedLoopSlot.kSlot0);
 
-    indexerconfig.closedLoop
+    indexerConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.indexer_Out_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.indexer_Out_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.indexer_Out_D, ClosedLoopSlot.kSlot0).maxMotion
         .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    indexerconfig.closedLoop.feedForward
+    indexerConfig.closedLoop.feedForward
         .kV(ShooterConstants.indexer_Out_F, ClosedLoopSlot.kSlot0);
 
-    indexerconfig.closedLoop.maxMotion
+    indexerConfig.closedLoop.maxMotion
         .cruiseVelocity(ShooterConstants.indexer_MAX_VELOCITY)
         .maxAcceleration(ShooterConstants.indexer_MAX_ACCEL);
 
-    superneoconfig.closedLoop
+    angleConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.superneo_Back_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.superneo_Back_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.superneo_Back_D, ClosedLoopSlot.kSlot0).maxMotion
         .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    superneoconfig.closedLoop.feedForward
+    angleConfig.closedLoop.feedForward
         .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
 
-    superneoconfig.closedLoop
+    angleConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
         .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    superneoconfig.closedLoop.feedForward
+    angleConfig.closedLoop.feedForward
         .kV(ShooterConstants.superneo_Out_F, ClosedLoopSlot.kSlot0);
 
-    superneoconfig.closedLoop.maxMotion
+    angleConfig.closedLoop.maxMotion
         .cruiseVelocity(ShooterConstants.superneo_MAX_VELOCITY)
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
-    superneo.configure(superneoconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    indexerMT1.configure(indexerconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    conveyorMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    // configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    // revertConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    baseConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    baseConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-    var BigFlyWheelConfig = BigFlyWheel.getConfigurator();
-    var SmallFlyWheelConfig = SmallFlyWheel.getConfigurator();
-    var IndexerMT2config = IndexerMT2.getConfigurator();
+    var bigFlyWheelConfigurator = bigFlyWheel.getConfigurator();
+    var smallFlyWheelConfigurator = smallFlyWheel.getConfigurator();
+    var indexerConfigurator = indexerMotor.getConfigurator();
 
-    TalonFXConfiguration bigFlyWheelConfigs = new TalonFXConfiguration();
-    TalonFXConfiguration smallFlyWheelConfigs = new TalonFXConfiguration();
-    TalonFXConfiguration indexerMT2Configs = new TalonFXConfiguration();
+    bigFlyWheelConfigurator.apply(baseConfig);
+    smallFlyWheelConfigurator.apply(baseConfig);
+    indexerConfigurator.apply(baseConfig);
 
-    BigFlyWheel.getConfigurator().apply(bigFlyWheelConfigs);
-    SmallFlyWheel.getConfigurator().apply(smallFlyWheelConfigs);
-    IndexerMT2.getConfigurator().apply(indexerMT2Configs);
+    bigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
+    smallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
+    indexerMotor.setNeutralMode(NeutralModeValue.Brake);
 
-    BigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
-    SmallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
-    IndexerMT2.setNeutralMode(NeutralModeValue.Brake);
+    bigFlyWheelConfigurator
+        .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterB_MAX_ACCEL)
+            .withMotionMagicCruiseVelocity(ShooterConstants.ShooterB_MAX_VELOCITY));
 
-    BigFlyWheelConfig.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
+    smallFlyWheelConfigurator
+        .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
+            .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
 
-    BigFlyWheelConfig.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterB_MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.ShooterB_MAX_VELOCITY));
-
-    SmallFlyWheelConfig.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
-
-    SmallFlyWheelConfig.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
-
-    IndexerMT2config.apply(new FeedbackConfigs().withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor));
-
-    IndexerMT2config.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));   
+    indexerConfigurator.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(ShooterConstants.indexer_MAX_VELOCITY));
 
     Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
     BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
     BFW_Out_PIDConfig.kI = ShooterConstants.ShooterB_Out_I;
     BFW_Out_PIDConfig.kD = ShooterConstants.ShooterB_Out_D;
     BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
-    BigFlyWheel.getConfigurator().apply(BFW_Out_PIDConfig);
+    bigFlyWheelConfigurator.apply(BFW_Out_PIDConfig);
 
     Slot1Configs BFW_Back_PIDConfig = new Slot1Configs();
     BFW_Back_PIDConfig.kP = ShooterConstants.ShooterB_Back_P;
     BFW_Back_PIDConfig.kI = ShooterConstants.ShooterB_Back_I;
     BFW_Back_PIDConfig.kD = ShooterConstants.ShooterB_Back_D;
     BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
-    BigFlyWheel.getConfigurator().apply(BFW_Back_PIDConfig);
-
-    BigFlyWheel.setPosition(0);
+    bigFlyWheelConfigurator.apply(BFW_Back_PIDConfig);
 
     Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
     SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
     SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
     SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
     SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
-    SmallFlyWheel.getConfigurator().apply(SFW_Out_PIDConfig);
+    smallFlyWheelConfigurator.apply(SFW_Out_PIDConfig);
 
     Slot1Configs SFW_Back_PIDConfig = new Slot1Configs();
     SFW_Back_PIDConfig.kP = ShooterConstants.ShooterS_Back_P;
     SFW_Back_PIDConfig.kI = ShooterConstants.ShooterS_Back_I;
     SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
     SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
-    SmallFlyWheel.getConfigurator().apply(SFW_Back_PIDConfig);
-    SmallFlyWheel.setPosition(0);
+    smallFlyWheelConfigurator.apply(SFW_Back_PIDConfig);
 
     Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
     Indexerrun_PIDConfig.kP = ShooterConstants.IndexerMT2run_P;
     Indexerrun_PIDConfig.kI = ShooterConstants.IndexerMT2run_I;
     Indexerrun_PIDConfig.kD = ShooterConstants.IndexerMT2run_D;
     Indexerrun_PIDConfig.kV = ShooterConstants.IndexerMT2run_F;
-    IndexerMT2.getConfigurator().apply(Indexerrun_PIDConfig);
-    IndexerMT2.setPosition(0);
+    indexerConfigurator.apply(Indexerrun_PIDConfig);
 
-
+    bigFlyWheel.setPosition(0);
+    smallFlyWheel.setPosition(0);
+    indexerMotor.setPosition(0);
   }
 
   public double getPositionbig() {
-    return BigFlyWheel.getPosition().getValueAsDouble();
+    return bigFlyWheel.getPosition().getValueAsDouble();
   }
 
   public double getPositionsmall() {
-    return SmallFlyWheel.getPosition().getValueAsDouble();
+    return smallFlyWheel.getPosition().getValueAsDouble();
   }
 
   // Intake Position
 
   public void Shooter_Out() {
-    BigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
-    SmallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
-   }
-
-  public void stopFlywheels() {
-    BigFlyWheel.stopMotor();
-    SmallFlyWheel.stopMotor();
+    bigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
+    smallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
   }
 
+  public void stopFlyWheels() {
+    bigFlyWheel.stopMotor();
+    smallFlyWheel.stopMotor();
+  }
 
+  // TODO: 改成 Command？
   // 取角度
   public void angle_out() {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
     angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-    
+
     if (encoder.getPosition() - angle > 0.5) {
-      superneo.set(0);
+      angleMotor.set(0);
       angle = -angle;
     } else {
-      superneo.set(0.2);
+      angleMotor.set(0.2);
     }
-    ;
   }
 
+  // TODO: 改成 Command？
   public void angle_in() {
-    
     if (encoder.getPosition() - angle > 0.5) {
-      superneo.set(0);
+      angleMotor.set(0);
     } else {
-      superneo.set(-0.2);
+      angleMotor.set(-0.2);
     }
-    ;
   }
 
-  public void IndexrWorking() {
-   indexerMTPID.setSetpoint(ShooterConstants.indexer_Out, SparkMax.ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+  public void conveyorRun() {
+    // TODO: 寫出 conveyor 功能
   }
 
-  public void stopIndexer() {
-    indexerMT1.set(0);
+  public void stopConveyor() {
+    conveyorMotor.stopMotor();
   }
-
-
 
 }

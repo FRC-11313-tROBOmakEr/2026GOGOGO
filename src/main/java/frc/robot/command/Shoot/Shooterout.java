@@ -30,7 +30,7 @@ public class Shooterout extends SequentialCommandGroup {
     new RunCommand(() -> shooter.Shooter_Out(),shooter),
     new InstantCommand(() -> shooter.angle_out(),shooter),
     Commands.waitSeconds(0.8),
-    new RunCommand(() -> shooter.IndexrWorking(),shooter)
+    new RunCommand(() -> shooter.conveyorRun(),shooter)
     );
   }
 }
