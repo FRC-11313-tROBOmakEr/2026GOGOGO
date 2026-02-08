@@ -13,7 +13,7 @@ public class Intakein extends SequentialCommandGroup {
 
     addCommands(
      new RunCommand(() ->intake.back(), intake).withTimeout(3),
-     new InstantCommand(() ->intake.intake_dont_do_that(), intake),
+     new InstantCommand(() ->intake.stopDeploy(), intake),
      new InstantCommand(() ->intake.stopRoller(), intake));
   }
 }

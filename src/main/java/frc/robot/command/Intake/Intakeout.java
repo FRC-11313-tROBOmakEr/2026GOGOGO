@@ -13,7 +13,7 @@ public class Intakeout extends SequentialCommandGroup {
 
     addCommands(
      new RunCommand(() ->intake.out(), intake).withTimeout(3),
-     new RunCommand(() ->intake.intake_dont_do_that(), intake), 
+     new RunCommand(() ->intake.stopDeploy(), intake), 
      new RunCommand(() ->intake.suck(), intake)
     );
   }
