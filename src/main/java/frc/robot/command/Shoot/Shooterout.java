@@ -2,8 +2,8 @@
 package frc.robot.command.Shoot;
 
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Target;
 import frc.robot.LimelightHelpers;
+import frc.robot.Target;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -20,12 +20,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 public class Shooterout extends SequentialCommandGroup {
   public PointWheelsAt point = new PointWheelsAt();
-  public CommandSwerveDrivetrain swerve;
-  public Shooterout(Shooter shooter, Target target, CommandSwerveDrivetrain swerve) {
+  public Target target = new Target();
+  public Shooterout(Shooter shooter, CommandSwerveDrivetrain swerve) {
 
     addRequirements(shooter);
     addCommands(
-    new InstantCommand(() -> target.updateTargetStatus(LimelightHelpers.getFiducialID(VisionConstants.LLName))),
+    new InstantCommand(() -> target.getTargetStatus(LimelightHelpers.getFiducialID(VisionConstants.LLName))),
     new RunCommand(() -> swerve.applyRequest(() -> point.withModuleDirection(target.getAimingRotation(LimelightHelpers.getBotPose2d(VisionConstants.LLName))))),
     new RunCommand(() -> shooter.Shooter_Out(),shooter),
     new InstantCommand(() -> shooter.angle_out(),shooter),

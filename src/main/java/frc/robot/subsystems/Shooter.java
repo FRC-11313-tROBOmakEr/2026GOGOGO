@@ -1,6 +1,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -8,6 +12,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -56,6 +65,12 @@ public class Shooter extends SubsystemBase {
   public double smoothSpeed;
   public double targetSpeed = 0.8;
   private double angle;
+  public Pose2d TargetPose = new Pose2d();
+  public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
+  private boolean isValidTarget = false;
+  private boolean targetisblue;
+  private final Pose2d REDPose = new Pose2d(8.27, 4.035, new Rotation2d(180));
+  private final Pose2d BLUEPose = new Pose2d(4.03, 4.035, new Rotation2d(0));
 
   public Shooter() {
     encoder = superneo.getAbsoluteEncoder();
@@ -211,7 +226,7 @@ public class Shooter extends SubsystemBase {
   public void angle_out() {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
+    angle = *target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
     
     if (encoder.getPosition() - angle > 0.5) {
       superneo.set(0);
@@ -240,4 +255,7 @@ public class Shooter extends SubsystemBase {
   public void stopIndexer() {
     indexerMT1.set(0);
   }
+
+
+
 }
