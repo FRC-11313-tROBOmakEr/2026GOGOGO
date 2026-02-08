@@ -1,5 +1,5 @@
 
-package frc.robot.command.shoot;
+package frc.robot.command.Shoot;
 
 import frc.robot.subsystems.Shooter;
 import frc.robot.LimelightHelpers;
