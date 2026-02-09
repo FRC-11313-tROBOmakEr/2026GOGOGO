@@ -2,7 +2,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-// import frc.robot.subsystems.Target;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -69,7 +68,7 @@ public class RobotContainer {
         //private final Climber climber = new Climber();
 
         // Target
-        private final Target target = new Target();
+       
         private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
         private  Shootin shootin = new Shootin(shooter);
@@ -117,7 +116,7 @@ public class RobotContainer {
                 xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
                                             .withModuleDirection(new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
                 // 我加的
-                //xboxController.x().whileTrue(shooterout).onFalse(shootin);
+                xboxController.x().whileTrue(shooterout).onFalse(shootin);
 
                 // pov是xboxcontroller十字按鈕(有上下左右)
                 xboxController.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));

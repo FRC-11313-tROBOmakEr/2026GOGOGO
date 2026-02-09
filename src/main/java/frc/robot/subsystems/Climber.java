@@ -68,7 +68,7 @@ public class Climber extends SubsystemBase {
 
   // TODO: 改成 MotionMagic
   public void Line_Back() {//2
-    tubeMotor1.set(-0.6);
+    tubeMotor1.setControl(new MotionMagicDutyCycle(IntakeConstants.Intake_Back_D));
   }
 
 
