@@ -1,5 +1,5 @@
 
-package frc.robot.command.Shoot;
+package frc.robot.command.shoot;
 
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.InstantCommand;

@@ -89,7 +89,7 @@ public class Shooter extends SubsystemBase {
         .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
 
     angleConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
@@ -103,6 +103,7 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
     angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     baseConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -158,6 +159,7 @@ public class Shooter extends SubsystemBase {
     Indexerrun_PIDConfig.kD = IndexerConstants.indexer_Run_D;
     Indexerrun_PIDConfig.kV = IndexerConstants.indexer_Run_F;
     indexerConfigurator.apply(Indexerrun_PIDConfig);
+
 
 
     bigFlyWheel.setPosition(0);

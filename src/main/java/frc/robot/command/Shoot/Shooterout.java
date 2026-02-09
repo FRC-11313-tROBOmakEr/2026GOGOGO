@@ -1,5 +1,5 @@
 
-package frc.robot.command.Shoot;
+package frc.robot.command.shoot;
 
 import frc.robot.subsystems.Shooter;
 import frc.robot.LimelightHelpers;
@@ -30,7 +30,7 @@ public class Shooterout extends SequentialCommandGroup {
     new RunCommand(() -> shooter.Shooter_Out(),shooter),
     new InstantCommand(() -> shooter.angle_out(),shooter),
     Commands.waitSeconds(0.8),
-    new RunCommand(() -> shooter.conveyorRun(),shooter)
+    new RunCommand(() -> shooter.indexerRun(),shooter)
     );
   }
 }
