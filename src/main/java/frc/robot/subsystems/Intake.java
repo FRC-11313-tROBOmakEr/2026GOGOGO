@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
 
 
     private final SparkClosedLoopController rollerPID = roller.getClosedLoopController();
-    private final SparkClosedLoopController ctrlPID = intakeDeploy.getClosedLoopController();
+    private final SparkClosedLoopController deployPID = intakeDeploy.getClosedLoopController();
 
     public Intake() {
 
@@ -89,17 +89,17 @@ public class Intake extends SubsystemBase {
     }
 
     public void zero() {
-        ctrlPID.setSetpoint(IntakeConstants.Intake_Zero, SparkMax.ControlType.kMAXMotionPositionControl,
+        deployPID.setSetpoint(IntakeConstants.Intake_Zero, SparkMax.ControlType.kMAXMotionPositionControl,
                 ClosedLoopSlot.kSlot0);
     }
 
     public void out() {
-        ctrlPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl,
+        deployPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl,
                 ClosedLoopSlot.kSlot0);
     }
 
     public void back() {
-        ctrlPID.setSetpoint(IntakeConstants.Intake_In, SparkMax.ControlType.kMAXMotionPositionControl,
+        deployPID.setSetpoint(IntakeConstants.Intake_In, SparkMax.ControlType.kMAXMotionPositionControl,
                 ClosedLoopSlot.kSlot1);
     }
 

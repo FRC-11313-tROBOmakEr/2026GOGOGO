@@ -67,6 +67,9 @@ public final class Constants {
 
         // Climber Confi
         public static final double Climb_Zero = 178;
+        public static final double Climber_Angle = 0;
+        public static final double Line_Out = 0;
+        public static final double Line_Back = 0;
 
         // Climber PIDF
         public static final double Climber_Angle_P = 0;
@@ -118,11 +121,6 @@ public final class Constants {
         public static final double ShooterB_Out_D = 0;
         public static final double ShooterB_Out_F = 0;
 
-        public static final double ShooterB_Back_P = 0;
-        public static final double ShooterB_Back_I = 0;
-        public static final double ShooterB_Back_D = 0;
-        public static final double ShooterB_Back_F = 0;
-
         public static final double ShooterB_MAX_ACCEL = 1000;
         public static final double ShooterB_MAX_VELOCITY = 400;
 
@@ -132,28 +130,21 @@ public final class Constants {
         public static final double ShooterS_Out_D = 0;
         public static final double ShooterS_Out_F = 0;
 
-        public static final double ShooterS_Back_P = 0;
-        public static final double ShooterS_Back_I = 0;
-        public static final double ShooterS_Back_D = 0;
-        public static final double ShooterS_Back_F = 0;
-
         public static final double ShooterS_MAX_ACCEL = 1000;
         public static final double ShooterS_MAX_VELOCITY = 400;
 
         //Indexer IndexerMT2 PID
-        public static final double IndexerMT2run_P = 0;
-        public static final double IndexerMT2run_I = 0;
-        public static final double IndexerMT2run_D = 0;
-        public static final double IndexerMT2run_F = 0;
+        public static final double conveyorrun_P = 0;
+        public static final double conveyorrun_I = 0;
+        public static final double conveyorrun_D = 0;
+        public static final double conveyorrun_F = 0;
+        public static final double conveyorrun = 3;
 
         // Shooter superneo PIDF
 
         public static final double superneo_Zero = 0;
-        public static final double indexer_Zero = 0;
         public static final double superneo_Out = 3;
-        public static final double indexer_Out = 3;
         public static final double superneo_Back = 0;
-        public static final double indexer_Back = 0;
         
         public static final double superneo_Out_P = 0;
         public static final double superneo_Out_I = 0;
@@ -172,10 +163,6 @@ public final class Constants {
         public static final double indexer_Out_D = 0;
         public static final double indexer_Out_F = 0;
 
-        public static final double indexer_Back_P = 0;
-        public static final double indexer_Back_I = 0;
-        public static final double indexer_Back_D = 0;
-        public static final double indexer_Back_F = 0;
         public static final double indexer_MAX_ACCEL = 1000;
         public static final double indexer_MAX_VELOCITY = 400;
 
@@ -183,34 +170,35 @@ public final class Constants {
 
     public static class IndexerConstants {
         // IndexerMT ID
-        public static final int IndexerMT2_ID = 47; // 待改
+        public static final int Indexer_ID = 47; // 待改
+        public static final int Conveyor_ID = 46;
+
+        public static final double indexer_Run = 3;
+        public static final double indexer_Zero = 0;        
+        public static final double conveyor_Run = 3;
+        public static final double conveyor_Zero = 0;
+
+        
 
         // IndexerMT Config
-        public static final boolean indexerMT_Inverted = false;
+        public static final boolean indexer_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double indexerMT_Zero = 178;
-        public static final double indexerMT_StartUp = -24;
+        public static final double indexer_StartUp = -24;
+
 
         // IndexerMT PIDF
-        public static final double indexerMT1_Out_P = 0;
-        public static final double indexerMT1_Out_I = 0;
-        public static final double indexerMT1_Out_D = 0;
-        public static final double indexerMT1_Out_F = 0;
+        public static final double conveyor_Run_P = 0;
+        public static final double conveyor_Run_I = 0;
+        public static final double conveyor_Run_D = 0;
+        public static final double conveyor_Run_F = 0;
 
-        public static final double indexerMT1_Back_P = 0;
-        public static final double indexerMT1_Back_I = 0;
-        public static final double indexerMT1_Back_D = 0;
-        public static final double indexerMT1_Back_F = 0;
 
-        public static final double indexerMT2_Out_P = 0;
-        public static final double indexerMT2_Out_I = 0;
-        public static final double indexerMT2_Out_D = 0;
-        public static final double indexerMT2_Out_F = 0;
+        public static final double indexer_Run_P = 0;
+        public static final double indexer_Run_I = 0;
+        public static final double indexer_Run_D = 0;
+        public static final double indexer_Run_F = 0;
 
-        public static final double indexerMT2_Back_P = 0;
-        public static final double indexerMT2_Back_I = 0;
-        public static final double indexerMT2_Back_D = 0;
-        public static final double indexerMT2_Back_F = 0;
+
 
 
         public static final double MAX_ACCEL = 1000;

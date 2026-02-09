@@ -29,6 +29,7 @@ public class Climber extends SubsystemBase {
 
 
     tubeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    //tubeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
 
     climberConfig.Slot0.kP = ClimberConstants.Climber_Angle_P;
@@ -37,10 +38,10 @@ public class Climber extends SubsystemBase {
     climberConfig.Slot0.kV = ClimberConstants.Climber_Angle_F;
 
 
-    climberConfig.Slot1.kP = ClimberConstants.Line_Out_P;
-    climberConfig.Slot1.kI = ClimberConstants.Line_Out_I;
-    climberConfig.Slot1.kD = ClimberConstants.Line_Out_D;
-    climberConfig.Slot1.kV = ClimberConstants.Line_Out_F;
+    tubeConfig.Slot1.kP = ClimberConstants.Line_Out_P;
+    tubeConfig.Slot1.kI = ClimberConstants.Line_Out_I;
+    tubeConfig.Slot1.kD = ClimberConstants.Line_Out_D;
+    tubeConfig.Slot1.kV = ClimberConstants.Line_Out_F;
 
 
     angleMotor.getConfigurator().apply(climberConfig);
@@ -58,17 +59,17 @@ public class Climber extends SubsystemBase {
 
 
   public void Climb_Angle() {
-    angleMotor.setControl(new MotionMagicDutyCycle(IntakeConstants.Intake_Out));
+    angleMotor.setControl(new MotionMagicDutyCycle(ClimberConstants.Climber_Angle));
   }
 
   // TODO: 改成用 MotionMagic 的 Velocity 而非一般 DutyCycle (會變成位置)
   public void Line_out() {//1 2s
-    angleMotor.setControl(new MotionMagicVelocityDutyCycle(IntakeConstants.Intake_Out).withSlot(1));
+    tubeMotor1.setControl(new MotionMagicVelocityDutyCycle(ClimberConstants.Line_Out).withSlot(1));
   }
 
   // TODO: 改成 MotionMagic
   public void Line_Back() {//2
-    tubeMotor1.set(-0.6);
+    tubeMotor1.setControl(new MotionMagicDutyCycle(ClimberConstants.Line_Back));
   }
 
 

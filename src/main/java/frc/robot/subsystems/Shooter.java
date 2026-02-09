@@ -41,14 +41,15 @@ import frc.robot.Constants.VisionConstants;
 public class Shooter extends SubsystemBase {
   private final TalonFX bigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX smallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
-  private final TalonFX indexerMotor = new TalonFX(IndexerConstants.IndexerMT2_ID, Constants.CANIVORE_BUS);
+  private final TalonFX indexerMotor = new TalonFX(IndexerConstants.Indexer_ID, Constants.CANIVORE_BUS);
   private final SparkMax angleMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax conveyorMotor = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
 
   private TalonFXConfiguration baseConfig = new TalonFXConfiguration();
   private final SparkClosedLoopController conveyorPID = conveyorMotor.getClosedLoopController();
+  private final SparkClosedLoopController anglePID = angleMotor.getClosedLoopController();
 
-  private final SparkMaxConfig indexerConfig = new SparkMaxConfig();
+  private final SparkMaxConfig conveyorConfig = new SparkMaxConfig();
   private final SparkMaxConfig angleConfig = new SparkMaxConfig();
 
   private final Target target = new Target();
@@ -64,29 +65,18 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     encoder = angleMotor.getAbsoluteEncoder();
-    indexerConfig.closedLoop
+    conveyorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ShooterConstants.indexer_Back_P, ClosedLoopSlot.kSlot0)
-        .i(ShooterConstants.indexer_Back_I, ClosedLoopSlot.kSlot0)
-        .d(ShooterConstants.indexer_Back_D, ClosedLoopSlot.kSlot0).maxMotion
+        .p(IndexerConstants.conveyor_Run_P, ClosedLoopSlot.kSlot0)
+        .i(IndexerConstants.conveyor_Run_I, ClosedLoopSlot.kSlot0)
+        .d(IndexerConstants.conveyor_Run_D, ClosedLoopSlot.kSlot0).maxMotion
         .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    indexerConfig.closedLoop.feedForward
-        .kV(ShooterConstants.indexer_Back_F, ClosedLoopSlot.kSlot0);
-
-    indexerConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ShooterConstants.indexer_Out_P, ClosedLoopSlot.kSlot0)
-        .i(ShooterConstants.indexer_Out_I, ClosedLoopSlot.kSlot0)
-        .d(ShooterConstants.indexer_Out_D, ClosedLoopSlot.kSlot0).maxMotion
-        .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
-
-    indexerConfig.closedLoop.feedForward
-        .kV(ShooterConstants.indexer_Out_F, ClosedLoopSlot.kSlot0);
-
-    indexerConfig.closedLoop.maxMotion
-        .cruiseVelocity(ShooterConstants.indexer_MAX_VELOCITY)
-        .maxAcceleration(ShooterConstants.indexer_MAX_ACCEL);
+    conveyorConfig.closedLoop.feedForward
+        .kV(IndexerConstants.conveyor_Run_F, ClosedLoopSlot.kSlot0);
+    conveyorConfig.closedLoop.maxMotion
+        .cruiseVelocity(IndexerConstants.MAX_VELOCITY)
+        .maxAcceleration(IndexerConstants.MAX_ACCEL);
 
     angleConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -99,7 +89,7 @@ public class Shooter extends SubsystemBase {
         .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
 
     angleConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
@@ -113,23 +103,27 @@ public class Shooter extends SubsystemBase {
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
     angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    conveyorMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    // revertConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    baseConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     baseConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     baseConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     var bigFlyWheelConfigurator = bigFlyWheel.getConfigurator();
     var smallFlyWheelConfigurator = smallFlyWheel.getConfigurator();
     var indexerConfigurator = indexerMotor.getConfigurator();
+   
 
     bigFlyWheelConfigurator.apply(baseConfig);
     smallFlyWheelConfigurator.apply(baseConfig);
     indexerConfigurator.apply(baseConfig);
 
+
     bigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
     smallFlyWheel.setNeutralMode(NeutralModeValue.Brake);
     indexerMotor.setNeutralMode(NeutralModeValue.Brake);
+
 
     bigFlyWheelConfigurator
         .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterB_MAX_ACCEL)
@@ -139,8 +133,10 @@ public class Shooter extends SubsystemBase {
         .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
             .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
 
-    indexerConfigurator.apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
-        .withMotionMagicCruiseVelocity(ShooterConstants.indexer_MAX_VELOCITY));
+    indexerConfigurator.apply(new MotionMagicConfigs().withMotionMagicAcceleration(IndexerConstants.MAX_ACCEL)
+        .withMotionMagicCruiseVelocity(IndexerConstants.MAX_VELOCITY));
+
+
 
     Slot0Configs BFW_Out_PIDConfig = new Slot0Configs();
     BFW_Out_PIDConfig.kP = ShooterConstants.ShooterB_Out_P;
@@ -149,13 +145,6 @@ public class Shooter extends SubsystemBase {
     BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
     bigFlyWheelConfigurator.apply(BFW_Out_PIDConfig);
 
-    Slot1Configs BFW_Back_PIDConfig = new Slot1Configs();
-    BFW_Back_PIDConfig.kP = ShooterConstants.ShooterB_Back_P;
-    BFW_Back_PIDConfig.kI = ShooterConstants.ShooterB_Back_I;
-    BFW_Back_PIDConfig.kD = ShooterConstants.ShooterB_Back_D;
-    BFW_Back_PIDConfig.kV = ShooterConstants.ShooterB_Back_F;
-    bigFlyWheelConfigurator.apply(BFW_Back_PIDConfig);
-
     Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
     SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
     SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
@@ -163,23 +152,20 @@ public class Shooter extends SubsystemBase {
     SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
     smallFlyWheelConfigurator.apply(SFW_Out_PIDConfig);
 
-    Slot1Configs SFW_Back_PIDConfig = new Slot1Configs();
-    SFW_Back_PIDConfig.kP = ShooterConstants.ShooterS_Back_P;
-    SFW_Back_PIDConfig.kI = ShooterConstants.ShooterS_Back_I;
-    SFW_Back_PIDConfig.kD = ShooterConstants.ShooterS_Back_D;
-    SFW_Back_PIDConfig.kV = ShooterConstants.ShooterS_Back_F;
-    smallFlyWheelConfigurator.apply(SFW_Back_PIDConfig);
 
     Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
-    Indexerrun_PIDConfig.kP = ShooterConstants.IndexerMT2run_P;
-    Indexerrun_PIDConfig.kI = ShooterConstants.IndexerMT2run_I;
-    Indexerrun_PIDConfig.kD = ShooterConstants.IndexerMT2run_D;
-    Indexerrun_PIDConfig.kV = ShooterConstants.IndexerMT2run_F;
+    Indexerrun_PIDConfig.kP = IndexerConstants.indexer_Run_P;
+    Indexerrun_PIDConfig.kI = IndexerConstants.indexer_Run_I;
+    Indexerrun_PIDConfig.kD = IndexerConstants.indexer_Run_D;
+    Indexerrun_PIDConfig.kV = IndexerConstants.indexer_Run_F;
     indexerConfigurator.apply(Indexerrun_PIDConfig);
+
+
 
     bigFlyWheel.setPosition(0);
     smallFlyWheel.setPosition(0);
     indexerMotor.setPosition(0);
+
   }
 
   public double getPositionbig() {
@@ -209,29 +195,32 @@ public class Shooter extends SubsystemBase {
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
     angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
 
-    if (encoder.getPosition() - angle > 0.5) {
-      angleMotor.set(0);
-      angle = -angle;
-    } else {
-      angleMotor.set(0.2);
-    }
+    anglePID.setSetpoint(angle, SparkMax.ControlType.kMAXMotionPositionControl
+                          , ClosedLoopSlot.kSlot0);
   }
 
   // TODO: 改成 Command？
   public void angle_in() {
-    if (encoder.getPosition() - angle > 0.5) {
-      angleMotor.set(0);
-    } else {
-      angleMotor.set(-0.2);
+  anglePID.setSetpoint(angle, SparkMax.ControlType.kMAXMotionPositionControl
+                          , ClosedLoopSlot.kSlot0);
     }
-  }
+  
 
   public void conveyorRun() {
-    // TODO: 寫出 conveyor 功能
+    conveyorPID.setSetpoint(IndexerConstants.conveyor_Run, SparkMax.ControlType.kMAXMotionPositionControl
+                            , ClosedLoopSlot.kSlot0);
   }
 
   public void stopConveyor() {
     conveyorMotor.stopMotor();
+  }
+
+  public void indexerRun(){
+    indexerMotor.setControl(new MotionMagicDutyCycle(IndexerConstants.indexer_Run));
+  }
+
+  public void stopIndexer() {
+    indexerMotor.stopMotor();
   }
 
 }
