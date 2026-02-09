@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 
 
@@ -30,7 +31,12 @@ public class Shooterout extends SequentialCommandGroup {
     new RunCommand(() -> shooter.Shooter_Out(),shooter),
     new InstantCommand(() -> shooter.angle_out(),shooter),
     Commands.waitSeconds(0.8),
-    new RunCommand(() -> shooter.indexerRun(),shooter)
+    new ParallelCommandGroup(
+        new RunCommand(() -> shooter.indexerRun(),shooter),
+        new RunCommand(() -> shooter.conveyorRun(), shooter)
+        
+    )
+    
     );
   }
 }
