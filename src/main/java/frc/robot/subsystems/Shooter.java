@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
         .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
 
     angleConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
         .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
         .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
