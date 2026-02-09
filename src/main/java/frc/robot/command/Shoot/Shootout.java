@@ -19,10 +19,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 
 
-public class Shooterout extends SequentialCommandGroup {
+public class Shootout extends SequentialCommandGroup {
   public PointWheelsAt point = new PointWheelsAt();
   public Target target = new Target();
-  public Shooterout(Shooter shooter, CommandSwerveDrivetrain swerve) {
+  public Shootout(Shooter shooter, CommandSwerveDrivetrain swerve) {
 
     addRequirements(shooter);
     addCommands(

@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.robot.subsystems.Intake;
 
-public class Intakein extends SequentialCommandGroup {
+public class Intakeback extends SequentialCommandGroup {
   
-  public Intakein(Intake intake) {
+  public Intakeback(Intake intake) {
 
     addCommands(
      new RunCommand(() ->intake.back(), intake).withTimeout(3),

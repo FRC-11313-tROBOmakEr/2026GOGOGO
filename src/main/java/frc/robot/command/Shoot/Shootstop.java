@@ -7,13 +7,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
 
-public  class Shootin  extends SequentialCommandGroup{
+public  class Shootstop  extends SequentialCommandGroup{
 
-  public Shootin(Shooter shooter) {  
+  public Shootstop(Shooter shooter) {  
     addCommands(  
     new InstantCommand(() -> shooter.stopFlyWheels(), shooter),
     new InstantCommand(() -> shooter.angle_in(), shooter),
     new InstantCommand(() -> shooter.stopConveyor(), shooter),
     new InstantCommand(() -> shooter.stopIndexer(), shooter));
-   
     }}

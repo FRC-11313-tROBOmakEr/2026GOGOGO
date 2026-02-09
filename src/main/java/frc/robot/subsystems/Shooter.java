@@ -188,8 +188,6 @@ public class Shooter extends SubsystemBase {
     smallFlyWheel.stopMotor();
   }
 
-  // TODO: 改成 Command？
-  // 取角度
   public void angle_out() {
     // jocker->學長、婉溱、宥云、盈萱
     // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
@@ -199,8 +197,8 @@ public class Shooter extends SubsystemBase {
                           , ClosedLoopSlot.kSlot0);
   }
 
-  // TODO: 改成 Command？
   public void angle_in() {
+  angle = -angle;
   anglePID.setSetpoint(angle, SparkMax.ControlType.kMAXMotionPositionControl
                           , ClosedLoopSlot.kSlot0);
     }

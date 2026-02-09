@@ -28,21 +28,7 @@ public final class Constants {
 
         public static final double Intake_Zero = 0;
         public static final double Intake_Out = 0;
-        public static final double Intake_In = 0;
-
-        // RollerMT的PID
-        public static final double Roller_Out_P = 0.0001;
-        public static final double Roller_Out_I = 0.0001;
-        public static final double Roller_Out_D = 0.01;
-        public static final double Roller_Out_F = 0.00017;
-
-        public static final double Roller_Back_P = 0.0001;
-        public static final double Roller_Back_I = 0.0001;
-        public static final double Roller_Back_D = 0.01;
-        public static final double Roller_Back_F = 0.00017;
-
-        public static final double ROLLER_MAX_ACCEL = 2000;
-        public static final double ROLLER_MAX_VELOCITY = 1500;
+        public static final double Intake_Back = 0;
 
         public static final double Intake_Out_P = 0.0001;
         public static final double Intake_Out_I = 0.0001;
@@ -108,8 +94,6 @@ public final class Constants {
         public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double ShooterB_Zero = 0;
-        public static final double ShooterS_Zero = 0;
         public static final double ShooterB_Out = 3;
         public static final double ShooterS_Out = 3;
         public static final double ShooterB_Back = 0;
@@ -132,13 +116,6 @@ public final class Constants {
 
         public static final double ShooterS_MAX_ACCEL = 1000;
         public static final double ShooterS_MAX_VELOCITY = 400;
-
-        //Indexer IndexerMT2 PID
-        public static final double conveyorrun_P = 0;
-        public static final double conveyorrun_I = 0;
-        public static final double conveyorrun_D = 0;
-        public static final double conveyorrun_F = 0;
-        public static final double conveyorrun = 3;
 
         // Shooter superneo PIDF
 

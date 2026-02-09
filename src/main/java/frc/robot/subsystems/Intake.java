@@ -25,31 +25,31 @@ public class Intake extends SubsystemBase {
 
         public Intake() {
 
-                SparkBaseConfig rollerConfig = new SparkMaxConfig();
-                rollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
-                rollerConfig.closedLoop
-                                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                                .p(IntakeConstants.Roller_Out_P, ClosedLoopSlot.kSlot0)
-                                .i(IntakeConstants.Roller_Out_I, ClosedLoopSlot.kSlot0)
-                                .d(IntakeConstants.Roller_Out_D, ClosedLoopSlot.kSlot0).maxMotion
-                                .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
+                // SparkBaseConfig rollerConfig = new SparkMaxConfig();
+                // rollerConfig.smartCurrentLimit(40).idleMode(IdleMode.kBrake);
+                // //rollerConfig.closedLoop
+                // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                // .p(IntakeConstants.Roller_Out_P, ClosedLoopSlot.kSlot0)
+                // .i(IntakeConstants.Roller_Out_I, ClosedLoopSlot.kSlot0)
+                // .d(IntakeConstants.Roller_Out_D, ClosedLoopSlot.kSlot0).maxMotion
+                // .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-                rollerConfig.closedLoop.feedForward
-                                .kV(IntakeConstants.Roller_Out_F, ClosedLoopSlot.kSlot0);
+                // rollerConfig.closedLoop.feedForward
+                // .kV(IntakeConstants.Roller_Out_F, ClosedLoopSlot.kSlot0);
 
-                rollerConfig.closedLoop
-                                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                                .p(IntakeConstants.Roller_Back_P, ClosedLoopSlot.kSlot1)
-                                .i(IntakeConstants.Roller_Back_I, ClosedLoopSlot.kSlot1)
-                                .d(IntakeConstants.Roller_Back_D, ClosedLoopSlot.kSlot1).maxMotion
-                                .allowedProfileError(0.05, ClosedLoopSlot.kSlot1);
+                // rollerConfig.closedLoop
+                // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                // .p(IntakeConstants.Roller_Back_P, ClosedLoopSlot.kSlot1)
+                // .i(IntakeConstants.Roller_Back_I, ClosedLoopSlot.kSlot1)
+                // .d(IntakeConstants.Roller_Back_D, ClosedLoopSlot.kSlot1).maxMotion
+                // .allowedProfileError(0.05, ClosedLoopSlot.kSlot1);
 
-                rollerConfig.closedLoop.feedForward
-                                .kV(IntakeConstants.Roller_Back_F, ClosedLoopSlot.kSlot1);
+                // rollerConfig.closedLoop.feedForward
+                // .kV(IntakeConstants.Roller_Back_F, ClosedLoopSlot.kSlot1);
 
-                rollerConfig.closedLoop.maxMotion
-                                .cruiseVelocity(IntakeConstants.ROLLER_MAX_VELOCITY)
-                                .maxAcceleration(IntakeConstants.ROLLER_MAX_ACCEL);
+                // rollerConfig.closedLoop.maxMotion
+                // .cruiseVelocity(IntakeConstants.ROLLER_MAX_VELOCITY)
+                // .maxAcceleration(IntakeConstants.ROLLER_MAX_ACCEL);
 
                 // TODO: 跟馬達的命名一起改
                 SparkMaxConfig deployConfig = new SparkMaxConfig();
@@ -79,7 +79,8 @@ public class Intake extends SubsystemBase {
                                 .maxAcceleration(IntakeConstants.INTAKE_MAX_ACCEL);
 
                 // 清空原本設定，套用新的
-                roller.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+                // roller.configure(rollerConfig, ResetMode.kResetSafeParameters,
+                // PersistMode.kPersistParameters);
                 deploy.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         }
 
@@ -98,16 +99,16 @@ public class Intake extends SubsystemBase {
         }
 
         public void back() {
-                deployPID.setSetpoint(IntakeConstants.Intake_In, SparkMax.ControlType.kMAXMotionPositionControl,
+                deployPID.setSetpoint(IntakeConstants.Intake_Back, SparkMax.ControlType.kMAXMotionPositionControl,
                                 ClosedLoopSlot.kSlot1);
         }
 
-        public void stopDeploy() { // TODO: 改名字
+        public void stopDeploy() {
                 deploy.stopMotor();
         }
 
         public void suck() {
-                roller.set(1.0);
+                roller.set(0.5);
         }
 
         public void stopRoller() {
