@@ -1,5 +1,23 @@
 package frc.robot;
 
+
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import java.util.Optional;
+
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.generated.TunerConstants;
 import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
@@ -200,8 +218,35 @@ public final class Constants {
 
     }
 
+    public static class swerveDriveConstants {
+        public static final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static final double maxAngularRate = Units.RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    }
+
+
     public static class VisionConstants {
         public static final String LLName = "light";
     }
 
+    public static class driveConstants {
+        public static final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static final double maxAngularRate = Units.RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        public static final Pose3d redHubPose = new Pose3d(Units.Inches.of(468.56), Units.Inches.of(158.32), Units.Inches.of(72.0), new Rotation3d());
+        public static final Pose3d blueHubPose = new Pose3d(Units.Inches.of(152.56), Units.Inches.of(158.32),  Units.Inches.of(72.0), new Rotation3d());
+
+        public static final Angle epsilonAngleToGoal = Degree.of(0.1); //robot will stop if it's in range of 5deg
+
+        public static final PIDController rotationController = getRotationController();
+
+        private static final PIDController getRotationController() {
+            PIDController controller = new PIDController(1.5, 0.0, 0.00514); 
+            controller.enableContinuousInput(-Math.PI, Math.PI);
+            return controller;
+        }
+
+        public static final Pose3d getHubPose() {
+            Pose3d hubPose = DriverStation.getAlliance().equals(Optional.of(Alliance.Blue)) ? blueHubPose : redHubPose;
+            return hubPose;
+        }
+    }
 }
