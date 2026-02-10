@@ -159,6 +159,5 @@ public class RobotContainer {
                 xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
-                drivetrain.registerTelemetry(logger::telemeterize);
         }
 }
