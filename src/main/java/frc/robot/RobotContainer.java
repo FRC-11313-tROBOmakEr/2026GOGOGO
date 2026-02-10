@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
-import frc.robot.command.Auto.Leftshoot2cycle;
-import frc.robot.command.Intake.Intakeback;
-import frc.robot.command.Intake.Intakeout;
-import frc.robot.command.Intake.Intakesuck;
-import frc.robot.command.Shoot.Shootout;
-import frc.robot.command.Shoot.Shootstop;
+import frc.robot.command.auto.Leftshoot2cycle;
+import frc.robot.command.intake.Intakeback;
+import frc.robot.command.intake.Intakeout;
+import frc.robot.command.intake.Intakesuck;
+import frc.robot.command.shoot.Shootout;
+import frc.robot.command.shoot.Shootstop;
 
 import frc.robot.generated.TunerConstants;
 
