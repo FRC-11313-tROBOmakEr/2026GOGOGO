@@ -44,8 +44,8 @@ public class Shooter extends SubsystemBase {
   private final TalonFX bigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX smallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX indexerMotor = new TalonFX(IndexerConstants.Indexer_ID, Constants.CANIVORE_BUS);
-  private final SparkMax angleMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
-  private final SparkMax conveyorMotor = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax angleMotor = new SparkMax(14, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax conveyorMotor = new SparkMax(11, SparkLowLevel.MotorType.kBrushless);
 
   private TalonFXConfiguration baseConfig = new TalonFXConfiguration();
   private final SparkClosedLoopController conveyorPID = conveyorMotor.getClosedLoopController();
