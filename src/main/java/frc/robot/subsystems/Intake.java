@@ -75,11 +75,6 @@ public class Intake extends SubsystemBase {
                 deploy.configure(deployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         }
 
-        private ClosedLoopConfig feedbackSensor(FeedbackSensor kprimaryencoder) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'feedbackSensor'");
-        }
-
         public void setRollerVelocity(double rpm) {
                 rollerPID.setSetpoint(rpm, SparkMax.ControlType.kMAXMotionVelocityControl);
         }
