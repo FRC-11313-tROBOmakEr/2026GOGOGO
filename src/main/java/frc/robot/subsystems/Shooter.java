@@ -30,6 +30,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
+import com.revrobotics.config.BaseConfig;
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 
@@ -46,8 +47,11 @@ public class Shooter extends SubsystemBase {
   private final TalonFX indexerMotor = new TalonFX(IndexerConstants.Indexer_ID, Constants.CANIVORE_BUS);
   private final SparkMax angleMotor = new SparkMax(14, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax conveyorMotor = new SparkMax(11, SparkLowLevel.MotorType.kBrushless);
+  
+  private TalonFXConfiguration bigflytwheelConfig = new TalonFXConfiguration();
+  private TalonFXConfiguration smallflywheelConfig = new TalonFXConfiguration();
+  private TalonFXConfiguration indexerConfig = new TalonFXConfiguration();
 
-  private TalonFXConfiguration baseConfig = new TalonFXConfiguration();
   private final SparkClosedLoopController conveyorPID = conveyorMotor.getClosedLoopController();
   private final SparkClosedLoopController anglePID = angleMotor.getClosedLoopController();
 
@@ -66,6 +70,9 @@ public class Shooter extends SubsystemBase {
   public static HashMap<Integer, List<Pose2d>> hubMap = new HashMap<>();
 
   public Shooter() {
+  bigflytwheelConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+  smallflywheelConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+  indexerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     encoder = angleMotor.getAbsoluteEncoder();
     conveyorConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -108,18 +115,18 @@ public class Shooter extends SubsystemBase {
     conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    baseConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    baseConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    baseConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    bigflytwheelConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    smallflywheelConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    indexerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
     var bigFlyWheelConfigurator = bigFlyWheel.getConfigurator();
     var smallFlyWheelConfigurator = smallFlyWheel.getConfigurator();
     var indexerConfigurator = indexerMotor.getConfigurator();
    
 
-    bigFlyWheelConfigurator.apply(baseConfig);
-    smallFlyWheelConfigurator.apply(baseConfig);
-    indexerConfigurator.apply(baseConfig);
+    bigFlyWheelConfigurator.apply(bigflytwheelConfig);
+    smallFlyWheelConfigurator.apply(smallflywheelConfig);
+    indexerConfigurator.apply(indexerConfig);
 
 
     bigFlyWheel.setNeutralMode(NeutralModeValue.Brake);
