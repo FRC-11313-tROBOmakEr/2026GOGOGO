@@ -12,13 +12,13 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
-        private final SparkMax roller = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
+        private final SparkMax roller = new SparkMax(IntakeConstants.Roller_ID, SparkLowLevel.MotorType.kBrushless);
         // TODO: 命名
-        private final SparkMax deploy = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
+        private final SparkMax deploy = new SparkMax(IntakeConstants.Deploy_ID, SparkLowLevel.MotorType.kBrushless);
 
         private final SparkClosedLoopController rollerPID = roller.getClosedLoopController();
         private final SparkClosedLoopController deployPID = deploy.getClosedLoopController();

@@ -26,6 +26,9 @@ public final class Constants {
 
     public static class IntakeConstants {
 
+        public static final int Roller_ID = 11; // 待改
+        public static final int Deploy_ID = 12;
+
         public static final double Intake_Zero = 0;
         public static final double Intake_Out = 0;
         public static final double Intake_Back = 0;
@@ -86,8 +89,8 @@ public final class Constants {
 
     public static class ShooterConstants {
         // Shooter ID
-        public static final int BigFlyWheel_ID = 44; // 待改
-        public static final int SmallFlyWheel_ID = 45; // 待改  
+        public static final int BigFlyWheel_ID = 13; 
+        public static final int SmallFlyWheel_ID = 11;  
 
         // Shooter Config
         public static final boolean BigFlyWheel_Inverted = false;
@@ -147,8 +150,8 @@ public final class Constants {
 
     public static class IndexerConstants {
         // IndexerMT ID
-        public static final int Indexer_ID = 47; // 待改
-        public static final int Conveyor_ID = 46;
+        public static final int Indexer_ID = 12; 
+        public static final int Conveyor_ID = 1;
 
         public static final double indexer_Run = 3;
         public static final double indexer_Zero = 0;        
@@ -160,7 +163,6 @@ public final class Constants {
         // IndexerMT Config
         public static final boolean indexer_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double indexer_StartUp = -24;
 
 
         // IndexerMT PIDF

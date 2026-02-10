@@ -17,8 +17,10 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import com.revrobotics.spark.SparkMax;
@@ -42,7 +44,7 @@ public class Shooter extends SubsystemBase {
   private final TalonFX bigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX smallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX indexerMotor = new TalonFX(IndexerConstants.Indexer_ID, Constants.CANIVORE_BUS);
-  private final SparkMax angleMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax angleMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax conveyorMotor = new SparkMax(0, SparkLowLevel.MotorType.kBrushless);
 
   private TalonFXConfiguration baseConfig = new TalonFXConfiguration();
@@ -129,9 +131,9 @@ public class Shooter extends SubsystemBase {
         .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterB_MAX_ACCEL)
             .withMotionMagicCruiseVelocity(ShooterConstants.ShooterB_MAX_VELOCITY));
 
-    smallFlyWheelConfigurator
-        .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
-            .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
+    // smallFlyWheelConfigurator
+    //     .apply(new MotionMagicConfigs().withMotionMagicAcceleration(ShooterConstants.ShooterS_MAX_ACCEL)
+    //         .withMotionMagicCruiseVelocity(ShooterConstants.ShooterS_MAX_VELOCITY));
 
     indexerConfigurator.apply(new MotionMagicConfigs().withMotionMagicAcceleration(IndexerConstants.MAX_ACCEL)
         .withMotionMagicCruiseVelocity(IndexerConstants.MAX_VELOCITY));
@@ -145,12 +147,12 @@ public class Shooter extends SubsystemBase {
     BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
     bigFlyWheelConfigurator.apply(BFW_Out_PIDConfig);
 
-    Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
-    SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
-    SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
-    SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
-    SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
-    smallFlyWheelConfigurator.apply(SFW_Out_PIDConfig);
+    // Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
+    // SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
+    // SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
+    // SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
+    // SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
+    // smallFlyWheelConfigurator.apply(SFW_Out_PIDConfig);
 
 
     Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
@@ -166,6 +168,8 @@ public class Shooter extends SubsystemBase {
     smallFlyWheel.setPosition(0);
     indexerMotor.setPosition(0);
 
+    smallFlyWheel.setControl(new Follower(bigFlyWheel.getDeviceID(), MotorAlignmentValue.Aligned));
+
   }
 
   public double getPositionbig() {
@@ -180,12 +184,12 @@ public class Shooter extends SubsystemBase {
 
   public void Shooter_Out() {
     bigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
-    smallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
+    //smallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
   }
 
   public void stopFlyWheels() {
     bigFlyWheel.stopMotor();
-    smallFlyWheel.stopMotor();
+    //smallFlyWheel.stopMotor();
   }
 
   public void angle_out() {
