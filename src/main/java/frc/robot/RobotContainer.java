@@ -90,7 +90,8 @@ public class RobotContainer {
         }
 
         public Command getAutonomousCommand() {
-                return autoChooser.getSelected();
+                //return autoChooser.getSelected();
+                return null;
         }
 
         public void configureBindings() {
@@ -124,7 +125,7 @@ public class RobotContainer {
                                                 () -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
                 // intake按鍵
-                xboxController.x().whileTrue(intakeout).onFalse(intakeback);
+                xboxController.y().whileTrue(intakeout).onFalse(intakeback);
 
                 // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
                 // .onFalse(intake.stopIntakeAndBack());
