@@ -77,7 +77,6 @@ public class RobotContainer {
     private Shootout shootout = new Shootout(shooter, drivetrain);
     private Intakeback intakeback = new Intakeback(intake);
     private Intakeout intakeout = new Intakeout(intake);
-    private Intakesuck intakesuck = new Intakesuck(intake);
     private Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake);
 
     private final SendableChooser<Command> autoChooser;
@@ -123,7 +122,6 @@ public class RobotContainer {
 
         // intake按鍵
         xboxController.x().whileTrue(intakeout).onFalse(intakeback);
-        xboxController.y().whileTrue(intakesuck);
 
         // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
         // .onFalse(intake.stopIntakeAndBack());

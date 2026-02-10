@@ -33,6 +33,14 @@ public final class Constants {
         public static final double Intake_Out = 0;
         public static final double Intake_Back = 0;
 
+        public static final double Roller_Zero = 0;
+        public static final double Roller_Out = 0;
+
+        public static final double Roller_Out_P = 0.0001;
+        public static final double Roller_Out_I = 0.0001;
+        public static final double Roller_Out_D = 0.01;
+        public static final double Roller_Out_F = 0.00017;
+
         public static final double Intake_Out_P = 0.0001;
         public static final double Intake_Out_I = 0.0001;
         public static final double Intake_Out_D = 0.01;
@@ -45,6 +53,10 @@ public final class Constants {
 
         public static final double INTAKE_MAX_ACCEL = 2000;
         public static final double INTAKE_MAX_VELOCITY = 1500;
+
+        public static final double ROLLER_MAX_ACCEL = 2000;
+        public static final double ROLLER_MAX_VELOCITY = 1500;
+
 
     }
 

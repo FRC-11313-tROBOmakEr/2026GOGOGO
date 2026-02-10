@@ -15,7 +15,6 @@ public class Shoot2cycle extends SequentialCommandGroup {
     addCommands(
       new InstantCommand(() ->shooter.angle_out()),
       new RunCommand(() ->shooter.Shooter_Out(),shooter),
-      Commands.waitSeconds(0.8),
       new RunCommand(() ->shooter.indexerRun(), shooter).withTimeout(4.2),
       new RunCommand(() ->intake.out(),intake).withTimeout(5),
       new RunCommand(() ->intake.stopDeploy(), intake), 
