@@ -22,7 +22,7 @@ import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
 
-    public static final CANBus CANIVORE_BUS = new CANBus("canbus");
+    public static final CANBus CANIVORE_BUS = new CANBus("888");
 
     public static class IntakeConstants {
 
