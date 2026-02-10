@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Constants.driveConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -222,7 +222,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     // Auto align
     public final SwerveRequest.FieldCentric alignDrive = new SwerveRequest.FieldCentric()
-            .withDeadband(driveConstants.maxSpeed * 0.1).withRotationalDeadband(driveConstants.maxAngularRate * 0.01) // Add a 10% deadband
+            .withDeadband(DriveConstants.maxSpeed * 0.1).withRotationalDeadband(DriveConstants.maxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     public Command autoAlignCommand(CommandXboxController driverCtrl) {
@@ -231,7 +231,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             double controllerVelY = -driverCtrl.getLeftY();
 
             Pose2d drivePose = getState().Pose;
-            Pose2d targetPose = driveConstants.getHubPose().toPose2d();
+            Pose2d targetPose = DriveConstants.getHubPose().toPose2d();
             
             Translation2d deltaDis = targetPose.relativeTo(drivePose).getTranslation();
             
@@ -241,12 +241,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             
             double wrappedAngleDeg = MathUtil.inputModulus(deltaAngle.getDegrees(), -180, 180);
             
-            if ((Math.abs(wrappedAngleDeg) < driveConstants.epsilonAngleToGoal.in(Degrees)) // if facing goal already
+            if ((Math.abs(wrappedAngleDeg) < DriveConstants.epsilonAngleToGoal.in(Degrees)) // if facing goal already
                && Math.hypot(controllerVelX, controllerVelY) < 0.1) {
                 return new SwerveRequest.SwerveDriveBrake();
             } else {
-                double vx = controllerVelY * driveConstants.maxSpeed;
-                double vy = controllerVelX * driveConstants.maxSpeed;
+                double vx = controllerVelY * DriveConstants.maxSpeed;
+                double vy = controllerVelX * DriveConstants.maxSpeed;
                 
                 // feedforward
                 double dx = deltaDis.getX(), dy = deltaDis.getY();
@@ -259,10 +259,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 double vw = ((dy*vx - dx*vy)) / rSquare ; // 先把PID設成0試試，可能需要在分子加負號
                     
                 // feedback
-                double feedback = driveConstants.rotationController.calculate(currentAngle.getRadians(), desiredAngle.getRadians());
+                double feedback = DriveConstants.rotationController.calculate(currentAngle.getRadians(), desiredAngle.getRadians());
 
                 vw += feedback;
-                vw = MathUtil.clamp(vw, -driveConstants.maxAngularRate, driveConstants.maxAngularRate);
+                vw = MathUtil.clamp(vw, -DriveConstants.maxAngularRate, DriveConstants.maxAngularRate);
                 // System.out.println(vw);
                 // System.out.println(vx);
                 // System.out.println(vx);
