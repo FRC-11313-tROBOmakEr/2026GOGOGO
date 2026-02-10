@@ -24,27 +24,27 @@ public class Target {
     private final Pose2d BLUEPose = new Pose2d(4.03, 4.035, new Rotation2d(0));
 
     public Command getTargetStatus(double aprilTagsID) {
-    return Commands.run(() -> {
-       
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            if (alliance.get() == Alliance.Red
-                    && ((aprilTagsID >= 2 && aprilTagsID <= 5) || (aprilTagsID >= 8 && aprilTagsID <= 11))) {
-               isValidTarget = true;
-           
-               TargetPose = REDPose;
+        return Commands.run(() -> {
 
-            } else if (alliance.get() == Alliance.Blue
-                    && ((aprilTagsID >= 18 && aprilTagsID <= 21) || (aprilTagsID >= 24 && aprilTagsID <= 27))) {
-              isValidTarget = true;
-                      TargetPose = BLUEPose;
-                      
-            } else {
-               isValidTarget = false;
+            Optional<Alliance> alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+                if (alliance.get() == Alliance.Red
+                        && ((aprilTagsID >= 2 && aprilTagsID <= 5) || (aprilTagsID >= 8 && aprilTagsID <= 11))) {
+                    isValidTarget = true;
+
+                    TargetPose = REDPose;
+
+                } else if (alliance.get() == Alliance.Blue
+                        && ((aprilTagsID >= 18 && aprilTagsID <= 21) || (aprilTagsID >= 24 && aprilTagsID <= 27))) {
+                    isValidTarget = true;
+                    TargetPose = BLUEPose;
+
+                } else {
+                    isValidTarget = false;
+                }
             }
-        }
-    });
-}
+        });
+    }
 
     public Rotation2d getAimingRotation(Pose2d robotPose) {
 
