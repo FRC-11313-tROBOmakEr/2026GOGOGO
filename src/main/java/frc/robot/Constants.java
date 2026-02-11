@@ -103,8 +103,8 @@ public final class Constants {
         public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double ShooterB_Out = 3;
-        public static final double ShooterS_Out = 3;
+        public static final double ShooterB_Out = 0.5;
+        public static final double ShooterS_Out = 0.5;
         public static final double ShooterB_Back = 0;
         public static final double ShooterS_Back = 0;
 
@@ -144,14 +144,6 @@ public final class Constants {
         public static final double superneo_MAX_ACCEL = 100;
         public static final double superneo_MAX_VELOCITY = 50;
 
-        public static final double indexer_Out_P = 0.1;
-        public static final double indexer_Out_I = 0;
-        public static final double indexer_Out_D = 0.002115;
-        public static final double indexer_Out_F = 0.00182;
-
-        public static final double indexer_MAX_ACCEL = 100;
-        public static final double indexer_MAX_VELOCITY = 50;
-
     }
 
     public static class IndexerConstants {
@@ -159,9 +151,9 @@ public final class Constants {
         public static final int Indexer_ID = 12;
         public static final int Conveyor_ID = 14;
 
-        public static final double indexer_Run = 3;
+        public static final double indexer_Run = 0.2;
         public static final double indexer_Zero = 0;
-        public static final double conveyor_Run = 3;
+        public static final double conveyor_Run = -0.4;
         public static final double conveyor_Zero = 0;
 
         // IndexerMT Config

@@ -216,7 +216,7 @@ public class Shooter extends SubsystemBase {
   
 
   public void conveyorRun() {
-    conveyorPID.setSetpoint(IndexerConstants.conveyor_Run, SparkMax.ControlType.kMAXMotionPositionControl
+    conveyorPID.setSetpoint(IndexerConstants.conveyor_Run, SparkMax.ControlType.kDutyCycle
                             , ClosedLoopSlot.kSlot0);
   }
 
