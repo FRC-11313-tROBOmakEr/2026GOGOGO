@@ -200,5 +200,8 @@ public class Shooter extends SubsystemBase {
   public void stopIndexer() {
     indexerMotor.stopMotor();
   }
+  public void angle(double x){
+    angleMotor.set(x);
+  }
 
 }
