@@ -24,13 +24,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.command.auto.Leftshoot2cycle;
 import frc.robot.command.intake.Intakeback;
 import frc.robot.command.intake.Intakeout;
-import frc.robot.command.intake.Intakesuck;
+
 import frc.robot.command.shoot.Shootout;
 import frc.robot.command.shoot.Shootstop;
 
 import frc.robot.generated.TunerConstants;
 
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+//import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
@@ -49,20 +49,20 @@ public class RobotContainer {
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
 
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-        private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        // private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        // private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
+        //                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         private final CommandXboxController xboxController = new CommandXboxController(0);
 
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        //public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         // private final Climber climber = new Climber();
 
         /* Path follower */
-        private AutoFactory autoFactory;
+        //private AutoFactory autoFactory;
         // private final AutoRoutines autoRoutines;
         private final Shooter shooter = new Shooter();
         // private final Climber climber = new Climber();
@@ -71,93 +71,93 @@ public class RobotContainer {
 
         // Target
 
-        private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
+        //private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
         private Shootstop shootstop = new Shootstop(shooter);
-        private Shootout shootout = new Shootout(shooter, drivetrain);
+        //private Shootout shootout = new Shootout(shooter, drivetrain);
         private Intakeback intakeback = new Intakeback(intake);
         private Intakeout intakeout = new Intakeout(intake);
         private Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake);
 
-        private final SendableChooser<Command> autoChooser;
+       // private final SendableChooser<Command> autoChooser;
 
         public RobotContainer() {
-                NamedCommands.registerCommand("leftshoot2cycle", leftshoot2cycle);
-                autoChooser = AutoBuilder.buildAutoChooser();
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+                //  NamedCommands.registerCommand("leftshoot2cycle", leftshoot2cycle);
+                //  autoChooser = AutoBuilder.buildAutoChooser();
+                //  SmartDashboard.putData("Auto Chooser", autoChooser);
 
                 configureBindings();
         }
 
-        public Command getAutonomousCommand() {
-                //return autoChooser.getSelected();
-                return null;
-        }
+        // public Command getAutonomousCommand() {
+        //         //return autoChooser.getSelected();
+        //         return null;
+        //}
 
         public void configureBindings() {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
-                drivetrain.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive
-                                                .withVelocityY(-xboxController.getLeftX() * MaxSpeed)
-                                                .withRotationalRate(-xboxController.getRightX() * MaxAngularRate)));
+                // drivetrain.setDefaultCommand(
+                //                 // Drivetrain will execute this command periodically
+                //                 drivetrain.applyRequest(() -> drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive
+                //                                 .withVelocityY(-xboxController.getLeftX() * MaxSpeed)
+                //                                 .withRotationalRate(-xboxController.getRightX() * MaxAngularRate)));
 
-                // Idle while th10e robot is disabled. This ensures the configured
-                // neutral mode is applied to the drive motors while disabled.
-                final var idle = new SwerveRequest.Idle();
-                RobotModeTriggers.disabled().whileTrue(
-                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                // // Idle while th10e robot is disabled. This ensures the configured
+                // // neutral mode is applied to the drive motors while disabled.
+                // final var idle = new SwerveRequest.Idle();
+                // RobotModeTriggers.disabled().whileTrue(
+                //                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-                xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
-                                .withModuleDirection(new Rotation2d(-xboxController.getLeftY(),
-                                                -xboxController.getLeftX()))));
-                // 我加的
-                xboxController.x().whileTrue(shootout).onFalse(shootstop);
+                // xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+                // xboxController.b().whileTrue(drivetrain.applyRequest(() -> point
+                //                 .withModuleDirection(new Rotation2d(-xboxController.getLeftY(),
+                //                                 -xboxController.getLeftX()))));
+                // // 我加的
+                // xboxController.x().whileTrue(shootout).onFalse(shootstop);
 
-                // pov是xboxcontroller十字按鈕(有上下左右)
-                xboxController.povUp()
-                                .whileTrue(drivetrain.applyRequest(
-                                                () -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-                xboxController.povDown()
-                                .whileTrue(drivetrain.applyRequest(
-                                                () -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
+                // // pov是xboxcontroller十字按鈕(有上下左右)
+                // xboxController.povUp()
+                //                 .whileTrue(drivetrain.applyRequest(
+                //                                 () -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+                // xboxController.povDown()
+                //                 .whileTrue(drivetrain.applyRequest(
+                //                                 () -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
                 // intake按鍵
                 xboxController.y().whileTrue(intakeout).onFalse(intakeback);
 
-                // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
-                // .onFalse(intake.stopIntakeAndBack());
-                // 這是啥???
-                // climber按鍵
-                // xboxController.leftBumper()
-                // .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
-                // xboxController.rightBumper()
-                // .whileTrue(climber.Climber_Back(-0.5));
-                // xboxController.leftTrigger()
-                // .whileTrue(climber.Line_Out(0.5));
-                // xboxController.rightTrigger()
-                // .whileTrue(climber.Line_back(-0.333333));
+                // // xboxController.y().whileTrue(intake.intakeAndExtension(0.5))
+                // // .onFalse(intake.stopIntakeAndBack());
+                // // 這是啥???
+                // // climber按鍵
+                // // xboxController.leftBumper()
+                // // .whileTrue(climber.Climber_Out(0.5));// 執行的動作//抓住然後捲線
+                // // xboxController.rightBumper()
+                // // .whileTrue(climber.Climber_Back(-0.5));
+                // // xboxController.leftTrigger()
+                // // .whileTrue(climber.Line_Out(0.5));
+                // // xboxController.rightTrigger()
+                // // .whileTrue(climber.Line_back(-0.333333));
 
-                // .whileTrue(climber.run(()-> climber.extend()))
-                // .onFalse((climber.runOnce)()->climber.stop());
+                // // .whileTrue(climber.run(()-> climber.extend()))
+                // // .onFalse((climber.runOnce)()->climber.stop());
 
-                // pov是xboxcontroller十字按鈕(有上下左右)
+                // // pov是xboxcontroller十字按鈕(有上下左右)
 
-                // Run SysId routines when holdi ng back/start and X/Y.
-                // Note that each routine should be run exactly once in a single log.
+                // // Run SysId routines when holdi ng back/start and X/Y.
+                // // Note that each routine should be run exactly once in a single log.
 
-                xboxController.back().and(xboxController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-                xboxController.back().and(xboxController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-                xboxController.start().and(xboxController.y())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-                xboxController.start().and(xboxController.x())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+                // xboxController.back().and(xboxController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+                // xboxController.back().and(xboxController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+                // xboxController.start().and(xboxController.y())
+                // //                 .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+                // // xboxController.start().and(xboxController.x())
+                // //                 .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-                // Reset the field-centric heading on left bumper press.
-                xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+                // // // Reset the field-centric heading on left bumper press.
+                // // xboxController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-                drivetrain.registerTelemetry(logger::telemeterize);
+                // // drivetrain.registerTelemetry(logger::telemeterize);
         }
 }

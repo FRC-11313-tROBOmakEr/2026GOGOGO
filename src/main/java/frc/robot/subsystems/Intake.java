@@ -12,6 +12,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.IntakeConstants;
@@ -23,6 +25,8 @@ public class Intake extends SubsystemBase {
 
         private final SparkClosedLoopController rollerPID = roller.getClosedLoopController();
         private final SparkClosedLoopController deployPID = deploy.getClosedLoopController();
+        private  SlewRateLimiter limiter;
+
 
         public Intake() {
 
@@ -85,12 +89,13 @@ public class Intake extends SubsystemBase {
         }
 
         public void out() {
-                deployPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kMAXMotionPositionControl,
+                
+                deployPID.setSetpoint(IntakeConstants.Intake_Out, SparkMax.ControlType.kDutyCycle,
                                 ClosedLoopSlot.kSlot0);
         }
 
         public void back() {
-                deployPID.setSetpoint(IntakeConstants.Intake_Back, SparkMax.ControlType.kMAXMotionPositionControl,
+                deployPID.setSetpoint(IntakeConstants.Intake_Back, SparkMax.ControlType.kDutyCycle,
                                 ClosedLoopSlot.kSlot1);
         }
 
@@ -99,9 +104,13 @@ public class Intake extends SubsystemBase {
         }
 
         public void suck() {
-                rollerPID.setSetpoint(IntakeConstants.Roller_Out, SparkMax.ControlType.kMAXMotionVelocityControl,
-                                   ClosedLoopSlot.kSlot1 );
+                
+        rollerPID.setSetpoint(IntakeConstants.Roller_Out, SparkMax.ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+                
         }
+
+ 
+
 
         public void stopRoller() {
                 roller.stopMotor();

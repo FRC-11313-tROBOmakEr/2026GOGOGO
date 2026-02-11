@@ -12,7 +12,7 @@ public class Leftshoot2cycle extends SequentialCommandGroup {
     addRequirements(intake);
 
     addCommands(
-      new InstantCommand(() ->shooter.angle_out()),
+    
       new RunCommand(() ->shooter.Shooter_Out(),shooter),
       new RunCommand(() ->shooter.indexerRun(), shooter).withTimeout(4.2),
       new RunCommand(() ->intake.out(),intake).withTimeout(5),

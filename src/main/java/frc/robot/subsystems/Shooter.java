@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -45,8 +46,8 @@ public class Shooter extends SubsystemBase {
   private final TalonFX bigFlyWheel = new TalonFX(ShooterConstants.BigFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX smallFlyWheel = new TalonFX(ShooterConstants.SmallFlyWheel_ID, Constants.CANIVORE_BUS);
   private final TalonFX indexerMotor = new TalonFX(IndexerConstants.Indexer_ID, Constants.CANIVORE_BUS);
-  private final SparkMax angleMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
-  private final SparkMax conveyorMotor = new SparkMax(1, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax angleMotor = new SparkMax(ShooterConstants.angleMotor_ID, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax conveyorMotor = new SparkMax(IndexerConstants.Conveyor_ID, SparkLowLevel.MotorType.kBrushless);
   
   private TalonFXConfiguration bigflytwheelConfig = new TalonFXConfiguration();
   private TalonFXConfiguration smallflywheelConfig = new TalonFXConfiguration();
@@ -111,8 +112,6 @@ public class Shooter extends SubsystemBase {
         .cruiseVelocity(ShooterConstants.superneo_MAX_VELOCITY)
         .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
-    // angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // conveyorMotor.configure(conveyorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     bigflytwheelConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     smallflywheelConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -153,12 +152,7 @@ public class Shooter extends SubsystemBase {
     BFW_Out_PIDConfig.kV = ShooterConstants.ShooterB_Out_F;
     bigFlyWheelConfigurator.apply(BFW_Out_PIDConfig);
 
-    // Slot0Configs SFW_Out_PIDConfig = new Slot0Configs();
-    // SFW_Out_PIDConfig.kP = ShooterConstants.ShooterS_Out_P;
-    // SFW_Out_PIDConfig.kI = ShooterConstants.ShooterS_Out_I;
-    // SFW_Out_PIDConfig.kD = ShooterConstants.ShooterS_Out_D;
-    // SFW_Out_PIDConfig.kV = ShooterConstants.ShooterS_Out_F;
-    // smallFlyWheelConfigurator.apply(SFW_Out_PIDConfig);
+ 
 
 
     Slot1Configs Indexerrun_PIDConfig = new Slot1Configs();
@@ -178,15 +172,7 @@ public class Shooter extends SubsystemBase {
 
   }
 
-  public double getPositionbig() {
-    return bigFlyWheel.getPosition().getValueAsDouble();
-  }
 
-  public double getPositionsmall() {
-    return smallFlyWheel.getPosition().getValueAsDouble();
-  }
-
-  // Intake Position
 
   public void Shooter_Out() {
     bigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
@@ -198,22 +184,6 @@ public class Shooter extends SubsystemBase {
     //smallFlyWheel.stopMotor();
   }
 
-  public void angle_out() {
-    // jocker->學長、婉溱、宥云、盈萱
-    // if (LimelightHelpers.getTV(VisionConstants.LLName)) {}
-    angle = target.getDistanceToTarget(LimelightHelpers.getBotPose2d(VisionConstants.LLName)) * 0.3 + 0.145;
-
-    anglePID.setSetpoint(angle, SparkMax.ControlType.kMAXMotionPositionControl
-                          , ClosedLoopSlot.kSlot0);
-  }
-
-  public void angle_in() {
-  angle = -angle;
-  anglePID.setSetpoint(angle, SparkMax.ControlType.kMAXMotionPositionControl
-                          , ClosedLoopSlot.kSlot0);
-    }
-  
-
   public void conveyorRun() {
     conveyorPID.setSetpoint(IndexerConstants.conveyor_Run, SparkMax.ControlType.kDutyCycle
                             , ClosedLoopSlot.kSlot0);
@@ -224,7 +194,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void indexerRun(){
-    indexerMotor.setControl(new MotionMagicDutyCycle(IndexerConstants.indexer_Run));
+    indexerMotor.setControl(new MotionMagicDutyCycle(IndexerConstants.indexer_Run).withSlot(1));
   }
 
   public void stopIndexer() {

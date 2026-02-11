@@ -1,18 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.util.Optional;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.generated.TunerConstants;
 import com.ctre.phoenix6.CANBus;
 
 public final class Constants {
@@ -25,11 +12,11 @@ public final class Constants {
         public static final int Deploy_ID = 12;
 
         public static final double Intake_Zero = 0;
-        public static final double Intake_Out = 0;
-        public static final double Intake_Back = 0;
+        public static final double Intake_Out = -0.3;
+        public static final double Intake_Back = 0.9;
 
         public static final double Roller_Zero = 0;
-        public static final double Roller_Out = 0;
+        public static final double Roller_Out = 0.7;
 
         public static final double Roller_Out_P = 0.1;
         public static final double Roller_Out_I = 0;
@@ -97,6 +84,7 @@ public final class Constants {
         // Shooter ID
         public static final int BigFlyWheel_ID = 13;
         public static final int SmallFlyWheel_ID = 11;
+        public static final int angleMotor_ID = 2;
 
         // Shooter Config
         public static final boolean BigFlyWheel_Inverted = false;
@@ -117,16 +105,6 @@ public final class Constants {
         public static final double ShooterB_MAX_ACCEL = 100;
         public static final double ShooterB_MAX_VELOCITY = 50;
 
-        // Shooter SmallFlyWheel PIDF
-        // public static final double ShooterS_Out_P = 0;
-        // public static final double ShooterS_Out_I = 0;
-        // public static final double ShooterS_Out_D = 0;
-        // public static final double ShooterS_Out_F = 0;
-
-        // public static final double ShooterS_MAX_ACCEL = 1000;
-        // public static final double ShooterS_MAX_VELOCITY = 400;
-
-        // Shooter superneo PIDF
 
         public static final double superneo_Zero = 0;
         public static final double superneo_Out = 3;
@@ -178,31 +156,5 @@ public final class Constants {
 
     public static class VisionConstants {
         public static final String LLName = "light";
-    }
-
-    public static class DriveConstants {
-        public static final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); 
-
-        public static final double maxAngularRate = Units.RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); 
-
-        public static final Pose3d redHubPose = new Pose3d(Units.Inches.of(468.56), Units.Inches.of(158.32),
-                Units.Inches.of(72.0), new Rotation3d());
-        public static final Pose3d blueHubPose = new Pose3d(Units.Inches.of(152.56), Units.Inches.of(158.32),
-                Units.Inches.of(72.0), new Rotation3d());
-
-        public static final Angle epsilonAngleToGoal = Degree.of(0.1); // robot will stop if it's in range of 5deg
-
-        public static final PIDController rotationController = getRotationController();
-
-        private static final PIDController getRotationController() {
-            PIDController controller = new PIDController(1.5, 0.0, 0.00514);
-            controller.enableContinuousInput(-Math.PI, Math.PI);
-            return controller;
-        }
-
-        public static final Pose3d getHubPose() {
-            Pose3d hubPose = DriverStation.getAlliance().equals(Optional.of(Alliance.Blue)) ? blueHubPose : redHubPose;
-            return hubPose;
-        }
     }
 }
