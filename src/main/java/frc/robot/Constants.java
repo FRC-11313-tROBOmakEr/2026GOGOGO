@@ -149,7 +149,7 @@ public final class Constants {
     public static class IndexerConstants {
         // IndexerMT ID
         public static final int Indexer_ID = 12;
-        public static final int Conveyor_ID = 14;
+        public static final int Conveyor_ID = 1;
 
         public static final double indexer_Run = 0.2;
         public static final double indexer_Zero = 0;

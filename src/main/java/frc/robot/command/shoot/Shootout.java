@@ -31,11 +31,10 @@ public class Shootout extends SequentialCommandGroup {
     new RunCommand(() -> shooter.Shooter_Out(),shooter),
     new InstantCommand(() -> shooter.angle_out(),shooter),
     Commands.waitSeconds(0.8),
-    new ParallelCommandGroup(
-        new RunCommand(() -> shooter.indexerRun(),shooter),
-        new RunCommand(() -> shooter.conveyorRun(), shooter)
+    new RunCommand(() -> shooter.indexerRun()),
+    new RunCommand(() -> shooter.conveyorRun())
         
-    )
+   
     
     );
   }
