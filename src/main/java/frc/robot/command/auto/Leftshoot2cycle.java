@@ -12,14 +12,14 @@ public class Leftshoot2cycle extends SequentialCommandGroup {
     addRequirements(intake);
 
     addCommands(
-    
-      new RunCommand(() ->shooter.Shooter_Out(),shooter),
-      new RunCommand(() ->shooter.indexerRun(), shooter).withTimeout(4.2),
-      new RunCommand(() ->intake.out(),intake).withTimeout(5),
-      new RunCommand(() ->intake.stopDeploy(), intake), 
-      new RunCommand(() ->intake.suck(), intake),
-      new RunCommand(() ->shooter.Shooter_Out(),shooter).withTimeout(5),
-      new RunCommand(() ->intake.stopDeploy(),intake));
+      new InstantCommand(() ->intake.out(),intake),
+      new InstantCommand(() ->shooter.Shooter_Out(),shooter),
+      new InstantCommand(() ->shooter.indexerRun(), shooter).withTimeout(4.2),
+      new InstantCommand(() ->intake.out(),intake).withTimeout(5),
+      new InstantCommand(() ->intake.stopDeploy(), intake), 
+      new InstantCommand(() ->intake.suck(), intake),
+      new InstantCommand(() ->shooter.Shooter_Out(),shooter).withTimeout(5),
+      new InstantCommand(() ->intake.stopDeploy(),intake));
   }   
 
   }

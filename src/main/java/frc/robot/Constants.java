@@ -13,7 +13,7 @@ public final class Constants {
 
         public static final double Intake_Zero = 0;
         public static final double Intake_Out = -0.3;
-        public static final double Intake_Back = 0.9;
+        public static final double Intake_Back = 0.7;
 
         public static final double Roller_Zero = 0;
         public static final double Roller_Out = 0.7;
