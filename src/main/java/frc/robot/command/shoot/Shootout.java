@@ -26,7 +26,7 @@ public class Shootout extends SequentialCommandGroup {
 
     addRequirements(shooter);
     addCommands(
-    new InstantCommand(() -> target.getTargetStatus(LimelightHelpers.getFiducialID(VisionConstants.LLName))),
+    // new InstantCommand(() -> target.getTargetStatus(LimelightHelpers.getFiducialID(VisionConstants.LLName))),
     //new RunCommand(() -> swerve.applyRequest(() -> point.withModuleDirection(target.getAimingRotation(LimelightHelpers.getBotPose2d(VisionConstants.LLName))))),
     new InstantCommand(() -> shooter.Shooter_Out(),shooter),
     Commands.waitSeconds(0.8),
