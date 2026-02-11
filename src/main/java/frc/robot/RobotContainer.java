@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -149,7 +150,7 @@ public class RobotContainer {
                 joystic.x().whileTrue(shootout).onFalse(shootstop);
 
                 // intake按鍵
-                joystic.y().onTrue(intakeout).onFalse(intakeback);
+                joystic.y().whileTrue(new InstantCommand(() -> intake.out())).onFalse(new InstantCommand(() -> intake.back()));
 
                 shooter.angle(joystic.getLeftY()*0.025);
         }

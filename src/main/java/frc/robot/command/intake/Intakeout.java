@@ -14,9 +14,7 @@ public class Intakeout extends SequentialCommandGroup {
   public Intakeout(Intake intake) {
 
     addCommands(
-     new InstantCommand(() ->intake.out(), intake),
-     new WaitCommand(0.2),
-     new InstantCommand(() ->intake.stopDeploy(), intake), 
+  
      new InstantCommand(() ->intake.suck(), intake)
   
     );

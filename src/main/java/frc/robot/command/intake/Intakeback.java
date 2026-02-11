@@ -13,9 +13,8 @@ public class Intakeback extends SequentialCommandGroup {
   public Intakeback(Intake intake) {
 
     addCommands(
-     new InstantCommand(() ->intake.back(), intake),
-     new WaitCommand(1.5),
-     new InstantCommand(() ->intake.stopDeploy(), intake),
+    
+
   
      new InstantCommand(() ->intake.stopRoller(), intake));
   }
