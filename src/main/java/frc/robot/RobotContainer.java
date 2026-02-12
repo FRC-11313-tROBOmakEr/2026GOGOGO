@@ -4,9 +4,13 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
+import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -19,7 +23,13 @@ import frc.robot.command.intake.Intakeout;
 import frc.robot.command.shoot.Shootstop;
 import frc.robot.command.intake.Intakeback;
 import frc.robot.command.intake.Deploy;
-import frc.robot.command.auto.Shoot2cycle;
+import frc.robot.command.auto.Newleftshoot2cycle;
+import frc.robot.command.auto.Newmidshoot2cycle;
+import frc.robot.command.auto.Newmidshoot2cycle;
+import frc.robot.command.auto.Newleftshoot2cycle;
+import choreo.auto.AutoChooser;
+
+//import com.pathplanner.lib.path.PathPlannerPath;
 
 
 
@@ -54,14 +64,16 @@ public class RobotContainer {
     private final Intakeback intakeback = new Intakeback(intake);
     private final Intakeout intakeout = new Intakeout(intake);
     private final Deploy deploy = new Deploy(intake);
-    private final Shoot2cycle shoot2cycle = new Shoot2cycle(shooter, intake);
-
-    
-    
+    private final Newmidshoot2cycle Newmidshoot2cycle = new Newmidshoot2cycle(shooter, intake);
+    private final Newleftshoot2cycle Newleftshoot2cycle = new Newleftshoot2cycle(shooter, intake);
+    private SendableChooser<Command> autoChooser;
 
 
     public RobotContainer() {
-        configureBindings();//下面的東東
+    NamedCommands.registerCommand("Newmidshoot2cycle", Newmidshoot2cycle);
+    NamedCommands.registerCommand("Newleftshoot2cycle", Newleftshoot2cycle);
+    configureBindings();
+    autoChooser = AutoBuilder.buildAutoChooser();
     }
 
     private void configureBindings() {
@@ -118,27 +130,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle));
-           
-           
-            
-
-                // 我加的
-          
-        }
+        return autoChooser.getSelected();
+    
+}
 
 }
