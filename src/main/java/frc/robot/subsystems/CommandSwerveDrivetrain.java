@@ -1,4 +1,5 @@
-package frc.robot.subsystems;
+    
+    package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -302,4 +303,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
+    public void resetRotation() {
+        this.seedFieldCentric();
+    }
 }
+

@@ -1,158 +1,144 @@
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
-import frc.robot.command.auto.Leftshoot2cycle;
-import frc.robot.command.intake.Intakeback;
-import frc.robot.command.intake.Intakeout;
-
 import frc.robot.command.shoot.Shootout;
+import frc.robot.command.intake.Intakeout;
 import frc.robot.command.shoot.Shootstop;
+import frc.robot.command.intake.Intakeback;
+import frc.robot.command.intake.Deploy;
+import frc.robot.command.auto.Shoot2cycle;
+
+
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-//import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
+    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); //最大速
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 最大角速
 
-        private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired
-                                                                                            // top
-                                                                                            // speed
-        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-                                                                                          // second
-                                                                                          // max angular velocity
+    /* Setting up bindings for necessary control of the swerve drive platform */
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% 死區(搖桿靈敏度下降)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors(開放迴圈控制)
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();//(X行煞車)內八
+    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();//方向控制
 
-        /* Setting up bindings for necessary control of the swerve drive platform */
-        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                                 // motors
+    private final Telemetry logger = new Telemetry(MaxSpeed);//即時數據傳送
 
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-        private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController joystick2 = new CommandXboxController(2);
 
-        private final Telemetry logger = new Telemetry(MaxSpeed);
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();//子系統
 
-        private final CommandXboxController xboxController = new CommandXboxController(0);
-        private final CommandXboxController joystic = new CommandXboxController(1);
+    private final Shooter shooter = new Shooter();
+    private final Intake intake = new Intake();
 
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        // private final Climber climber = new Climber();
+    private final Shootout shootout = new Shootout(shooter);
+    private final Shootstop shootstop = new Shootstop(shooter);
+    private final Intakeback intakeback = new Intakeback(intake);
+    private final Intakeout intakeout = new Intakeout(intake);
+    private final Deploy deploy = new Deploy(intake);
+    private final Shoot2cycle shoot2cycle = new Shoot2cycle(shooter, intake);
 
-        /* Path follower */
-        private AutoFactory autoFactory;
-        private AutoRoutine autoRoutines;
-        private final Shooter shooter = new Shooter();
-        // private final Climber climber = new Climber();
-        private final Intake intake = new Intake();
-        // private final Climber climber = new Climber();
+    
+    
 
-        private final SwerveRequest.FieldCentricFacingAngle aimDrive = new SwerveRequest.FieldCentricFacingAngle();
 
-        private Shootstop shootstop = new Shootstop(shooter);
-        private Shootout shootout = new Shootout(shooter);
-        private Intakeback intakeback = new Intakeback(intake);
-        private Intakeout intakeout = new Intakeout(intake);
-        private Leftshoot2cycle leftshoot2cycle = new Leftshoot2cycle(shooter, intake);
+    public RobotContainer() {
+        configureBindings();//下面的東東
+    }
 
-        private final SendableChooser<Command> autoChooser;
+    private void configureBindings() {
 
-        public RobotContainer() {
-                NamedCommands.registerCommand("leftshoot2cycle", leftshoot2cycle);
-                autoChooser = AutoBuilder.buildAutoChooser();
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+               joystick2.x().whileTrue(shootout).onFalse(shootstop);
 
-                configureBindings();
-        }
-
-        public Command getAutonomousCommand() {
-                // return autoChooser.getSelected();
-                return null;
-        }
-
-        public void configureBindings() {
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
-                drivetrain.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive.withVelocityX(-xboxController.getLeftY() * MaxSpeed) // Drive
-                                                                                                                         // forward
-                                                                                                                         // with
-                                                                                                                         // negative
-                                                                                                                         // Y
-                                                                                                                         // (forward)
-                                                .withVelocityY(-xboxController.getLeftX() * MaxSpeed) // Drive left with
-                                                                                                      // negative X
-                                                                                                      // (left)
-                                                .withRotationalRate(-xboxController.getRightX() * MaxAngularRate) // Drive
-                                                                                                                  // counterclockwise
-                                                                                                                  // with
-                                                                                                                  // negative
-                                                                                                                  // X
-                                                                                                                  // (left)
-                                ));
-
-                // Idle while the robot is disabled. This ensures the configured
-                // neutral mode is applied to the drive motors while disabled.
-                final var idle = new SwerveRequest.Idle();
-                RobotModeTriggers.disabled().whileTrue(
-                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-
-                xboxController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                xboxController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
-                                new Rotation2d(-xboxController.getLeftY(), -xboxController.getLeftX()))));
-
-                // Run SysId routines when holding back/start and X/Y.
-                // Note that each routine should be run exactly once in a single log.
-                xboxController.back().and(xboxController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-                xboxController.back().and(xboxController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-                xboxController.start().and(xboxController.y())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-                xboxController.start().and(xboxController.x())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-                // Reset the field-centric heading on left bumper press.
-                xboxController.leftBumper().onTrue(drivetrain.runOnce(() -> {
-                        drivetrain.resetPose(new Pose2d());
-                        drivetrain.seedFieldCentric();
-                }));
-
-                drivetrain.registerTelemetry(logger::telemeterize);
-
-                // 我加的
-                joystic.x().whileTrue(shootout).onFalse(shootstop);
+                joystick2.a().whileTrue(deploy);
 
                 // intake按鍵
-                joystic.y().whileTrue(new InstantCommand(() -> intake.out())).onFalse(new InstantCommand(() -> intake.back()));
+                joystick2.y().whileTrue(intakeout).onFalse(intakeback);
 
-                shooter.angle(joystic.getLeftY()*0.025);
+                shooter.angle(joystick.getLeftY()*0.2);
+
+                joystick2.b().onTrue(new InstantCommand(()-> drivetrain.resetRotation()));
+        // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        drivetrain.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            )
+        );
+
+        // Idle while the robot is disabled. This ensures the configured
+        // neutral mode is applied to the drive motors while disabled.
+        final var idle = new SwerveRequest.Idle();
+        RobotModeTriggers.disabled().whileTrue(
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+        );
+
+        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.b().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        ));
+
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+        // Reset the field-centric heading on left bumper press.
+        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> {
+            drivetrain.resetPose(new Pose2d());
+            drivetrain.seedFieldCentric();
+        }));
+
+        
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public Command getAutonomousCommand() {
+        // Simple drive forward auton
+        final var idle = new SwerveRequest.Idle();
+        return Commands.sequence(
+            // Reset our field centric heading to match the robot
+            // facing away from our alliance station wall (0 deg).
+            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+            // Then slowly drive forward (away from us) for 5 seconds.
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(0.5)
+                    .withVelocityY(0)
+                    .withRotationalRate(0)
+            )
+            .withTimeout(5.0),
+            // Finally idle for the rest of auton
+            drivetrain.applyRequest(() -> idle));
+           
+           
+            
+
+                // 我加的
+          
         }
 
 }

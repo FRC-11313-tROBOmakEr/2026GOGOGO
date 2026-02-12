@@ -18,6 +18,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -88,29 +89,29 @@ public class Shooter extends SubsystemBase {
         .cruiseVelocity(IndexerConstants.MAX_VELOCITY)
         .maxAcceleration(IndexerConstants.MAX_ACCEL);
 
-    angleConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ShooterConstants.superneo_Back_P, ClosedLoopSlot.kSlot0)
-        .i(ShooterConstants.superneo_Back_I, ClosedLoopSlot.kSlot0)
-        .d(ShooterConstants.superneo_Back_D, ClosedLoopSlot.kSlot0).maxMotion
-        .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
+    // angleConfig.closedLoop
+    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //     .p(ShooterConstants.superneo_Back_P, ClosedLoopSlot.kSlot0)
+    //     .i(ShooterConstants.superneo_Back_I, ClosedLoopSlot.kSlot0)
+    //     .d(ShooterConstants.superneo_Back_D, ClosedLoopSlot.kSlot0).maxMotion
+    //     .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    angleConfig.closedLoop.feedForward
-        .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
+    // angleConfig.closedLoop.feedForward
+    //     .kV(ShooterConstants.superneo_Back_F, ClosedLoopSlot.kSlot0);
 
-    angleConfig.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
-        .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
-        .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
-        .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
+    // angleConfig.closedLoop
+    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //     .p(ShooterConstants.superneo_Out_P, ClosedLoopSlot.kSlot0)
+    //     .i(ShooterConstants.superneo_Out_I, ClosedLoopSlot.kSlot0)
+    //     .d(ShooterConstants.superneo_Out_D, ClosedLoopSlot.kSlot0).maxMotion
+    //     .allowedProfileError(0.05, ClosedLoopSlot.kSlot0);
 
-    angleConfig.closedLoop.feedForward
-        .kV(ShooterConstants.superneo_Out_F, ClosedLoopSlot.kSlot0);
+    // angleConfig.closedLoop.feedForward
+    //     .kV(ShooterConstants.superneo_Out_F, ClosedLoopSlot.kSlot0);
 
-    angleConfig.closedLoop.maxMotion
-        .cruiseVelocity(ShooterConstants.superneo_MAX_VELOCITY)
-        .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
+    // angleConfig.closedLoop.maxMotion
+    //     .cruiseVelocity(ShooterConstants.superneo_MAX_VELOCITY)
+    //     .maxAcceleration(ShooterConstants.superneo_MAX_ACCEL);
 
 
     bigflytwheelConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -168,14 +169,14 @@ public class Shooter extends SubsystemBase {
     smallFlyWheel.setPosition(0);
     indexerMotor.setPosition(0);
 
-    smallFlyWheel.setControl(new Follower(bigFlyWheel.getDeviceID(), MotorAlignmentValue.Aligned));
+    smallFlyWheel.setControl(new Follower(bigFlyWheel.getDeviceID(), MotorAlignmentValue.Opposed));
 
   }
 
 
 
   public void Shooter_Out() {
-    bigFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterB_Out).withSlot(0));
+    bigFlyWheel.setControl(new DutyCycleOut(ShooterConstants.ShooterB_Out));
     //smallFlyWheel.setControl(new MotionMagicDutyCycle(ShooterConstants.ShooterS_Out).withSlot(0));
   }
 
@@ -194,7 +195,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void indexerRun(){
-    indexerMotor.setControl(new MotionMagicDutyCycle(IndexerConstants.indexer_Run).withSlot(1));
+    indexerMotor.setControl(new DutyCycleOut(IndexerConstants.indexer_Run));
   }
 
   public void stopIndexer() {

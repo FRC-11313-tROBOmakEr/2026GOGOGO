@@ -8,15 +8,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.robot.subsystems.Intake;
 
-//public class Intakeback extends SequentialCommandGroup {
+public class Intakeback extends SequentialCommandGroup {
   
-  //public Intakeback(Intake intake) {
+  public Intakeback(Intake intake) {
 
-    //addCommands(
+    addCommands(
     
 
   
-     //new InstantCommand(() ->intake.stopRoller(), intake));
-  //}
-//}
+     new InstantCommand(() ->intake.stopRoller(), intake));
+  }
+}
 

@@ -91,8 +91,8 @@ public final class Constants {
         public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double ShooterB_Out = 0.5;
-        public static final double ShooterS_Out = 0.5;
+        public static final double ShooterB_Out = 0.4;
+        public static final double ShooterS_Out = 0.4;
         public static final double ShooterB_Back = 0;
         public static final double ShooterS_Back = 0;
 
@@ -129,7 +129,7 @@ public final class Constants {
         public static final int Indexer_ID = 12;
         public static final int Conveyor_ID = 1;
 
-        public static final double indexer_Run = 0.2;
+        public static final double indexer_Run = 0.3;
         public static final double indexer_Zero = 0;
         public static final double conveyor_Run = -0.4;
         public static final double conveyor_Zero = 0;
