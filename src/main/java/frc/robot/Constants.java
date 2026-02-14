@@ -91,8 +91,8 @@ public final class Constants {
         public static final boolean SmallFlyWheel_Inverted = false;
         public static final boolean superneo_Inverted = false;
         // public static final double Climb_Angle = -30;
-        public static final double ShooterB_Out = 0.4;
-        public static final double ShooterS_Out = 0.4;
+        public static final double ShooterB_Out = 0.65;
+        public static final double ShooterS_Out = 0.65;
         public static final double ShooterB_Back = 0;
         public static final double ShooterS_Back = 0;
 

@@ -3,6 +3,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,7 +35,7 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 最大角速
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% 死區(搖桿靈敏度下降)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors(開放迴圈控制)
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();//(X行煞車)內八
@@ -42,7 +44,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);//即時數據傳送
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-    private final CommandXboxController joystick2 = new CommandXboxController(2);
+   // private final CommandXboxController joystick2 = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();//子系統
 
@@ -62,20 +64,22 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();//下面的東東
+        // drivetrain.getModule(0).getDriveMotor().getConfigurator().apply(new TalonFXConfiguration().MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive));
+        // drivetrain.getModule(1).getDriveMotor().getConfigurator().apply(new TalonFXConfiguration().MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive));
     }
 
     private void configureBindings() {
 
-               joystick2.x().whileTrue(shootout).onFalse(shootstop);
+            //    joystick2.x().whileTrue(shootout).onFalse(shootstop);
 
-                joystick2.a().whileTrue(deploy);
+            //     joystick2.a().whileTrue(deploy);
 
-                // intake按鍵
-                joystick2.y().whileTrue(intakeout).onFalse(intakeback);
+            //     // intake按鍵
+            //     joystick2.y().whileTrue(intakeout).onFalse(intakeback);
 
-                shooter.angle(joystick.getLeftY()*0.2);
+            //     shooter.angle(joystick2.getLeftY()*0.3);
 
-                joystick2.b().onTrue(new InstantCommand(()-> drivetrain.resetRotation()));
+                joystick.b().onTrue(new InstantCommand(()-> drivetrain.resetRotation()));
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -111,7 +115,7 @@ public class RobotContainer {
             drivetrain.resetPose(new Pose2d());
             drivetrain.seedFieldCentric();
         }));
-
+        
         
 
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -120,19 +124,10 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
+        return Commands.sequence();
             // Reset our field centric heading to match the robot
             // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle));
+        
            
            
             
